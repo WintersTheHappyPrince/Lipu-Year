@@ -40,14 +40,4 @@ public class CheckpointManager : MonoBehaviour
         return currentCheckpoint;
     }
 
-    public void RespawnPlayer()
-    {
-        if (currentCheckpoint != null)
-        {
-            // Respawn the player at the current checkpoint's position
-            // Optionally, reset player state or other properties here
-            PlayerManager.instance.player.transform.position = currentCheckpoint.transform.position;
-            PlayerManager.instance.player.Respawn();
-        }
-    }
 }

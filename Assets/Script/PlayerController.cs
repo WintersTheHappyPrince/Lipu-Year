@@ -107,9 +107,6 @@ public class PlayerController : MonoBehaviour
         //检测头部
         headHit = Physics2D.Raycast(headCheck.position, Vector2.up, headCheckDistance, groundLayer);
 
-        // 记录坠落高度
-        IsFallingLogic();
-        //Debug.Log(fallDistance);
     }
 
     private void Update()
@@ -126,22 +123,22 @@ public class PlayerController : MonoBehaviour
         // 更新颜色
         UpdateColor();
 
-        //摔死了，man
-        if (fallDistance > red && isGrounded)
-        {
-            Die();
-            if(!killedByNail) killedByFall = true;
-        }
-
         if (isOnPlatform) isGrounded = true;
+
+        //摔死了，man
+        if (fallDistance > red)
+        {
+            if (isGrounded)
+            {
+                Die();
+                if (!killedByNail) killedByFall = true;
+            }
+        }
 
         if (isGrounded)
         {
             fallDistance = 0;
-            if (isGrounded && !isOnPlatform)
-            {
-                rb.gravityScale = defaultGravity;
-            }
+            if(!isJumping)  rb.gravityScale = defaultGravity;
         }
 
         if (!isGrounded)
@@ -149,27 +146,30 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale = jumpingGravity;
         }
 
+        // 记录坠落高度
+        IsFallingLogic();
+        //Debug.Log(fallDistance);
+
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
 
         stateMachine.Update();
-
     }
 
     public void Respawn()
     {
-        
-            //修改死亡动画位置使其匹配视觉效果
-            Vector3 newPosition = anim.transform.position;
-            newPosition.y += 0.12f;
-            anim.transform.position = newPosition;
+        //修改死亡动画位置使其匹配视觉效果
+        Vector3 newPosition = anim.transform.position;
+        newPosition.y += 0.12f;
+        anim.transform.position = newPosition;
 
-            RespawnSystemAction?.Invoke();
+        RespawnSystemAction?.Invoke();
 
-            isDead = false;
-            killedByFall = false;
-            killedByNail = false;
-            anim.SetBool("Dead", false);
+        isDead = false;
+        killedByFall = false;
+        killedByNail = false;
+        anim.SetBool("Dead", false);
         Debug.Log("运行了172行");
+
     }
 
     private void UpdateColor()
@@ -276,39 +276,24 @@ public class PlayerController : MonoBehaviour
         }
 
         jumpInput = Input.GetButtonDown("Jump");
-        xInput = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
-
         //跳跃逻辑
         JumpLogic();
+
+        xInput = Input.GetAxisRaw("Horizontal");
+        rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
     }
 
     private void JumpLogic()
     {
-        if (jumpInput)
+        if (jumpInput && isGrounded)
         {
-            if(isGrounded)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-                isJumping = true;
-                jumpTimeCounter = 0f;
-                //isJumpLocked = false;
-                ChangeState(airState);
-            }
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            isJumping = true;
+            jumpTimeCounter = 0f;
+            //isJumpLocked = false;
+            ChangeState(airState);
         }
         
-        //跳跃顶头时的处理情况
-        if (isJumping && headHit)
-        {
-            //Debug.Log("顶到头了");
-            isJumpLocked = true;
-            lockedYPosition = transform.position.y;
-        }
-        if (isJumpLocked)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, 0);
-            transform.position = new Vector2(transform.position.x, lockedYPosition);
-        }
         // 跳跃时间控制
         if (isJumping)
         {
@@ -320,6 +305,17 @@ public class PlayerController : MonoBehaviour
                 isJumping = false;
                 isJumpLocked = false;
             }
+        }
+        //跳跃顶头时的处理情况
+        if (isJumping && headHit)
+        {
+            isJumpLocked = true;
+            lockedYPosition = transform.position.y;
+        }
+        if (isJumpLocked)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+            transform.position = new Vector2(transform.position.x, lockedYPosition);
         }
     }
 

@@ -12,6 +12,7 @@ public class AirState : PlayerState
 
     public override void Update()
     {
+        if (!player.isGrounded) return;
         if (player.isGrounded)
         {
             if (player.isMoving)

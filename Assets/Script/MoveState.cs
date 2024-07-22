@@ -11,6 +11,10 @@ public class MoveState : PlayerState
 
     public override void Update()
     {
+        if (!player.isGrounded)
+        {
+            player.ChangeState(player.airState);
+        }
         if (player.isGrounded)
         {
             if (!player.isMoving)
@@ -18,7 +22,6 @@ public class MoveState : PlayerState
                 player.ChangeState(player.idleState);
             }
         }
-       
     }
 
     public override void Exit()

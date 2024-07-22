@@ -47,14 +47,18 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (state == CheckpointState.Default)
+            PlayerController player = other.GetComponent<PlayerController>();
+            if (player.isGrounded)
             {
-                // 当玩家碰到检查点时，设置为当前激活检查点
-                CheckpointManager.instance.SetActiveCheckpoint(this);
-                //CheckpointSave?.Invoke();
+                if (state == CheckpointState.Default)
+                {
+                    // 当玩家碰到检查点时，设置为当前激活检查点
+                    CheckpointManager.instance.SetActiveCheckpoint(this);
+                    //CheckpointSave?.Invoke();
 
+                }
             }
-
+            
         }
     }
 }
