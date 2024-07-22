@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
 
     public CheckpointManager checkpointManager;
 
+    public PlayerController player;
+
     private void Awake()
     {
         if (Instance == null)
@@ -27,14 +29,19 @@ public class GameManager : MonoBehaviour
         }
 
         checkpointManager = FindObjectOfType<CheckpointManager>();
+
         blockPlayer = GameObject.Find("BlockPlayer");
+
+        player = FindObjectOfType<PlayerController>();
     }
 
     private void Start()
     {
         Debug.Log("GameManager¶©ÔÄcheckpoint.CheckpointSave");
+
         checkpointManager.CheckpointSave += Save;
-        PlayerManager.instance.player.RespawnSystemAction += Load;
+
+        player.RespawnSystemAction += Load;
     }
 
     private void OnDisable()

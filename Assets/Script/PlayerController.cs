@@ -272,8 +272,8 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("jumpInput");
                 CheckpointManager.instance.RespawnPlayer();
+                return;
             }
-            else return;
         }
 
         jumpInput = Input.GetButtonDown("Jump");
