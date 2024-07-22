@@ -5,12 +5,15 @@ public class Nail : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
-
-        if (player.fallDistance > 0.3)
+        if (player != null)
         {
-            player.killedByNail = true;
-            player.Die();
+            if (player.fallDistance > 0.3)
+            {
+                player.killedByNail = true;
+                player.Die();
+            }
         }
+        
     }
 
 
