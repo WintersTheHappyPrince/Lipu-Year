@@ -15,7 +15,4 @@ public class Nail : MonoBehaviour
         }
         
     }
-
-
-
 }
