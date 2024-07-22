@@ -157,9 +157,7 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
-        //if (Input.GetKeyDown(KeyCode.K))
-        if (!isDead) return;
-        {
+        
             //修改死亡动画位置使其匹配视觉效果
             Vector3 newPosition = anim.transform.position;
             newPosition.y += 0.12f;
@@ -171,7 +169,7 @@ public class PlayerController : MonoBehaviour
             killedByFall = false;
             killedByNail = false;
             anim.SetBool("Dead", false);
-        }
+        Debug.Log("运行了172行");
     }
 
     private void UpdateColor()
@@ -266,14 +264,15 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovement()
     {
-        if (isDead)
+        if (isDead)  //空格重开
         {
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("jumpInput");
-                CheckpointManager.instance.RespawnPlayer();
-                return;
+                RespawnSystemAction?.Invoke();
+                Respawn();
             }
+            Debug.Log("运行到274行");
+            return;
         }
 
         jumpInput = Input.GetButtonDown("Jump");

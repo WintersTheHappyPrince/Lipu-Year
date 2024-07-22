@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
         checkpointManager.CheckpointSave += Save;
 
         player.RespawnSystemAction += Load;
+
+        Save();
     }
 
     private void OnDisable()
