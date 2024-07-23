@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
@@ -14,8 +15,6 @@ public class Checkpoint : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Sprite[] sprites;
 
-    //public System.Action CheckpointSave;
-
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -29,9 +28,9 @@ public class Checkpoint : MonoBehaviour
         UpdateSprite();
     }
 
-    private void UpdateSprite()
+        
+    private void UpdateSprite() // 根据状态更新图像
     {
-        // 根据状态更新图像
         switch (state)
         {
             case CheckpointState.Default:
@@ -43,22 +42,40 @@ public class Checkpoint : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.CompareTag("Player"))
+        PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+        if (player != null)
         {
-            PlayerController player = other.GetComponent<PlayerController>();
-            if (player.isGrounded)
+            if (state == CheckpointState.Default)
             {
-                if (state == CheckpointState.Default)
-                {
-                    // 当玩家碰到检查点时，设置为当前激活检查点
-                    CheckpointManager.instance.SetActiveCheckpoint(this);
-                    //CheckpointSave?.Invoke();
-
-                }
+                StartCoroutine(nameof(CheckpointSave));
             }
-            
         }
     }
+
+    private IEnumerator CheckpointSave()
+    {
+        yield return new WaitForSeconds(0.2f);
+        if(PlayerManager.instance.player.isGrounded && !PlayerManager.instance.player.isDead)
+        {
+            CheckpointManager.instance.SetActiveCheckpoint(this);
+        }
+    }
+
+    //private void OnTriggerEnter2D(Collider2D other)
+    //{
+    //    if (other.CompareTag("Player"))
+    //    {
+    //        PlayerController player = other.GetComponent<PlayerController>();
+    //        if (player.isGrounded)
+    //        {
+    //            if (state == CheckpointState.Default)
+    //            {
+    //                // 当玩家碰到检查点时，设置为当前激活检查点
+    //                CheckpointManager.instance.SetActiveCheckpoint(this);
+    //            }
+    //        }
+    //    }
+    //}
 }
