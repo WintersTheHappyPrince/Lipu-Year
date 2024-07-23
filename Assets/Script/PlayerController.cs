@@ -168,8 +168,6 @@ public class PlayerController : MonoBehaviour
         killedByFall = false;
         killedByNail = false;
         anim.SetBool("Dead", false);
-        Debug.Log("运行了172行");
-
     }
 
     private void UpdateColor()
@@ -271,7 +269,6 @@ public class PlayerController : MonoBehaviour
                 RespawnSystemAction?.Invoke();
                 Respawn();
             }
-            Debug.Log("运行到274行");
             return;
         }
 
