@@ -48,13 +48,13 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameManagerÈ¡Ïû¶©ÔÄcheckpoint.CheckpointSave");
         checkpointManager.CheckpointSave -= Save;
-        PlayerManager.instance.player.RespawnSystemAction -= Load;
+        player.RespawnSystemAction -= Load;
     }
 
     public void Save()
     {
         SaveCameraPosition(Camera.main.transform.position);
-        SavePlayerPosition(PlayerManager.instance.player.transform.position);
+        SavePlayerPosition(player.transform.position);
         SavePlayerBlockerPos(blockPlayer.transform.position);
         Debug.Log("DateSave");
     }
@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     public void Load()
     {
         Camera.main.transform.position = LoadSavedCameraPosition();
-        PlayerManager.instance.player.transform.position = LoadPlayerPosition();
+        player.transform.position = LoadPlayerPosition();
         blockPlayer.transform.position = LoadPlayerBlockerPos();
     }
 
