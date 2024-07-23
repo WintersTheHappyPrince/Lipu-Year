@@ -8,30 +8,24 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
+        if (instance != null)
         {
             Destroy(gameObject);
         }
-    }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject); // 保持单例对象在场景切换时不被销毁
+        }
 
-    private void Start()
-    {
-        // Assuming PlayerController is attached to the same GameObject
-        player = GetComponent<PlayerController>();
-
-        // Alternatively, find the PlayerController in the scene
         if (player == null)
         {
             player = FindObjectOfType<PlayerController>();
+            if (player == null)
+            {
+                Debug.LogError("未找到PlayerController组件！");
+            }
         }
 
-        if (player == null)
-        {
-            Debug.LogError("PlayerController not found!");
-        }
     }
 }

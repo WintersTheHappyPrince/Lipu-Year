@@ -83,7 +83,6 @@ public class CameraParentTriggerHandler : MonoBehaviour
                 //blockPlayer.transform.position += new Vector3(0,-16);
                 break;
         }
-
     }
 
     IEnumerator blockPlayerSetFalse(GameObject blockPlayer)

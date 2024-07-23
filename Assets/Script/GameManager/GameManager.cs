@@ -30,14 +30,12 @@ public class GameManager : MonoBehaviour
 
         checkpointManager = FindObjectOfType<CheckpointManager>();
 
-        blockPlayer = GameObject.Find("BlockPlayer");
-
         player = FindObjectOfType<PlayerController>();
     }
 
     private void Start()
     {
-        Debug.Log("GameManager¶©ÔÄcheckpoint.CheckpointSave");
+        blockPlayer = GameObject.Find("BlockPlayer");
 
         checkpointManager.CheckpointSave += Save;
 
@@ -56,7 +54,7 @@ public class GameManager : MonoBehaviour
     public void Save()
     {
         SaveCameraPosition(Camera.main.transform.position);
-        SavePlayerPosition(PlayerManager.instance.transform.position);
+        SavePlayerPosition(PlayerManager.instance.player.transform.position);
         SavePlayerBlockerPos(blockPlayer.transform.position);
         Debug.Log("DateSave");
     }

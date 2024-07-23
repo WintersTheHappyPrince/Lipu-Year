@@ -137,7 +137,7 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded)
         {
-            fallDistance = 0;
+            //fallDistance = 0;
             if(!isJumping)  rb.gravityScale = defaultGravity;
         }
 
@@ -157,17 +157,14 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
-        //修改死亡动画位置使其匹配视觉效果
-        Vector3 newPosition = anim.transform.position;
-        newPosition.y += 0.12f;
-        anim.transform.position = newPosition;
-
-        RespawnSystemAction?.Invoke();
-
         isDead = false;
         killedByFall = false;
         killedByNail = false;
         anim.SetBool("Dead", false);
+        //修改死亡动画位置使其匹配视觉效果
+        Vector3 newPosition = anim.transform.position;
+        newPosition.y += 0.12f;
+        anim.transform.position = newPosition;
     }
 
     private void UpdateColor()
@@ -242,6 +239,7 @@ public class PlayerController : MonoBehaviour
         if (!isFalling)
         {
             highestPos = transform.position.y;
+            fallDistance = 0;
         }
         else
         {
@@ -266,8 +264,8 @@ public class PlayerController : MonoBehaviour
         {
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                RespawnSystemAction?.Invoke();
                 Respawn();
+                RespawnSystemAction?.Invoke();
             }
             return;
         }
