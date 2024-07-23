@@ -159,12 +159,17 @@ public class PlayerController : MonoBehaviour
     {
         isDead = false;
         killedByFall = false;
-        killedByNail = false;
         anim.SetBool("Dead", false);
         //修改死亡动画位置使其匹配视觉效果
+        if (killedByNail)
+        {
+            killedByNail = false;
+            return;
+        }
         Vector3 newPosition = anim.transform.position;
         newPosition.y += 0.12f;
         anim.transform.position = newPosition;
+        
     }
 
     private void UpdateColor()
@@ -220,6 +225,7 @@ public class PlayerController : MonoBehaviour
         isDead = true;
         rb.velocity = new Vector2(0, 0);
         //修改死亡动画位置使其匹配视觉效果
+        if (killedByNail) return;
         Vector3 newPosition = anim.transform.position;
         newPosition.y -= 0.12f;
         anim.transform.position = newPosition;

@@ -7,7 +7,6 @@ public class HiddenWall : MonoBehaviour
 {
     private Tilemap tm;
 
-
     private void Start()
     {
         tm = GetComponent<Tilemap>();
@@ -17,14 +16,17 @@ public class HiddenWall : MonoBehaviour
     {
         if (player.CompareTag("Player"))
         {
+            Debug.Log("check");
             tm.color = new Color(1, 1, 1, 0.5f);
         }
-
-        StopAllCoroutines();
+        //StopAllCoroutines();
+        //StartCoroutine(nameof(Exit));
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (!this.isActiveAndEnabled) return;
+        StopAllCoroutines();
         StartCoroutine(nameof(Exit));
     }
 
