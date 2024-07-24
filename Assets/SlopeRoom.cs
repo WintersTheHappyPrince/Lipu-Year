@@ -20,7 +20,7 @@ public class SlopeRoom : MonoBehaviour
         Debug.Log("Enter Trigger");
         if(collision.CompareTag("Player"))
         {
-            StartCoroutine("SlopeCheckOn");
+            StartCoroutine(nameof(SlopeCheckOn));
         }
     }
 
