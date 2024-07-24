@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public PlayerState bouncingState;
     public PlayerState drillingState;
     public PlayerState invertedState;
+    public PlayerState slopeState;
     #endregion
     #region Components
     [HideInInspector] public SpriteRenderer sr;
@@ -33,17 +35,17 @@ public class PlayerController : MonoBehaviour
     public float bounceHeight = 4f;
     public float drillSpeed = 2f;
     public float invertGravityThreshold = 8f;
-    [SerializeField] private float xInput;
+    public float xInput;
     private float jumpingGravity;
     private float defaultGravity;
     private bool jumpInput;
-    private bool isJumping;
+    public bool isJumping;
     #endregion
     #region Character States
     [SerializeField] private LayerMask groundLayer; // 用于地面检测的 Layer
     [SerializeField] private LayerMask platformLayer; // 用于平台检测的 Layer
-    [SerializeField] Transform groundCheck; // 地面检测的起始点
-    [SerializeField] private float groundCheckRadius = 0.2f; // 地面检测的半径
+    public Transform groundCheck; // 地面检测的起始点
+    public float groundCheckRadius = 0.35f; // 地面检测的半径
 
     private bool headHit;
     [SerializeField] private Transform headCheck; // 头部检测的起始点
@@ -55,7 +57,7 @@ public class PlayerController : MonoBehaviour
     private float lockedYPosition;
 
     public bool isDead;
-    private bool killedByFall;
+    [SerializeField] private bool killedByFall;
     public bool killedByNail;
     public bool isFalling;
 
@@ -63,13 +65,16 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded;
     public bool isMoving;
 
-    private bool isFacingRight = true;
+    public bool isFacingRight = true;
 
     private float highestPos;
     public float fallDistance;
-    public float fallRed;
+    [SerializeField] private float fallRed=1.5f;
     #endregion
-
+    #region Slope
+    [SerializeField] private bool isOnRightSlope;
+    [SerializeField] private bool isOnLeftSlope;
+    #endregion
     public System.Action RespawnSystemAction;
 
     private void Start()
@@ -91,6 +96,7 @@ public class PlayerController : MonoBehaviour
         bouncingState = new BouncingState(this);
         drillingState = new DrillingState(this);
         invertedState = new InvertedState(this);
+        slopeState = new SlopeState(this);
 
         // Set initial state
         stateMachine.SetState(idleState);
@@ -104,16 +110,15 @@ public class PlayerController : MonoBehaviour
         //检测平台
         isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
 
+        //检测斜坡
+        isOnRightSlope = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckRadius, groundLayer);
+
         //检测头部
         headHit = Physics2D.Raycast(headCheck.position, Vector2.up, headCheckDistance, groundLayer);
-
     }
 
     private void Update()
     {
-        //复活角色(调试用)    
-        //Respawn();
-
         //翻转角色
         Flip();
 
@@ -187,6 +192,8 @@ public class PlayerController : MonoBehaviour
                 return;
             }
         }
+
+        if (isDead) return;
 
         if (fallDistance >= fallRed && fallDistance <= 3)
         {
