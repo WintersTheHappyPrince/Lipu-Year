@@ -46,6 +46,7 @@ public class Trampoline : MonoBehaviour
             {
                 if (cd.bounds.center.y < player.cd.bounds.min.y)
                 {
+                    player.StopBounceRotate();
                     player.rb.velocity = new Vector2(0, jumpForce);
                     anim.SetBool("Active", true);
                     active = true;

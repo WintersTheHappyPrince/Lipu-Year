@@ -6,20 +6,22 @@ public class IdleState : PlayerState
 
     public override void Enter()
     {
-        //player.sr.color = player.normalColor;
+        if (!player.isColorCoroutineRunning && player.sr.color!=player.normalColor) player.StartSetDefaultColor(0.2f);
+        //player.UpdateColor();
         // 可以在这里触发静置时的动画
     }
 
     public override void Update()
     {
-        if (player.isMoving)
-        {
-            player.ChangeState(player.moveState);
-        }
-        else if (!player.isGrounded)
+        if (!player.isGrounded)
         {
             player.ChangeState(player.airState);
         }
+        else if (player.isMoving)
+        {
+            player.ChangeState(player.moveState);
+        }
+        
     }
 
     public override void Exit()

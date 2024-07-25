@@ -6,9 +6,10 @@ public class BouncingState : PlayerState
 
     public override void Enter()
     {
-        player.sr.color = player.bounceColor;
+        //player.sr.color = player.bounceColor;
         player.rb.velocity = new Vector2(player.rb.velocity.x, player.bounceHeight);
         // 可以在这里触发弹跳状态的动画
+        player.ChangeState(player.airState);
     }
 
     public override void Update()

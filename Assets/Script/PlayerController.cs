@@ -22,15 +22,14 @@ public class PlayerController : MonoBehaviour
     #endregion
     #region Color and state
     [HideInInspector] public Color normalColor;
-    [SerializeField] private float fallRed=1.5f;
-    [SerializeField] private float red = 1.7f;
+    [SerializeField] private float red = 1.6f;
     [HideInInspector] public Color fallColor;
     public Color deadColor;
-    private float bounce = 4f;
+    public float bounce = 4f;
     public Color bounceColor;
     [HideInInspector] public Color drillColor;
     [HideInInspector] public Color invertColor;
-    private bool isColorCoroutineRunning;
+    public bool isColorCoroutineRunning;
     #endregion
     #region Move info
     private float moveSpeed = 6f;
@@ -73,10 +72,6 @@ public class PlayerController : MonoBehaviour
     private float highestPos;
     public float fallDistance;
     #endregion
-    #region Slope
-    [SerializeField] private bool isOnRightSlope;
-    [SerializeField] private bool isOnLeftSlope;
-    #endregion
     [SerializeField] private float testFloat;
     public System.Action RespawnSystemAction;
 
@@ -113,9 +108,6 @@ public class PlayerController : MonoBehaviour
         //检测平台
         isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
 
-        //检测斜坡
-        isOnRightSlope = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckRadius, groundLayer);
-
         //检测头部
         headHit = Physics2D.Raycast(headCheck.position, Vector2.up, headCheckDistance, groundLayer);
     }
@@ -131,11 +123,11 @@ public class PlayerController : MonoBehaviour
         // 更新颜色
         UpdateColor();
 
-        //摔死了，man
-        FallDistanceState();
-
         //触地相关判定
         GroundLogic();
+
+        //摔落距离状态
+        FallDistanceState();
 
         // 记录坠落高度
         IsFallingLogic();
@@ -153,19 +145,16 @@ public class PlayerController : MonoBehaviour
             Die();
             if (!killedByNail) killedByFall = true;
         }
-        else if (fallDistance > bounce && isGrounded)
+        else if (fallDistance > bounce)
         {
-            rb.velocity = new Vector2(rb.velocity.x, bounceHeight);
-            //if (isGrounded)
-            //{
-            //    ChangeState(bouncingState);
-            //}
+            StartBounceRotate(720);
+            //rb.velocity = new Vector2(rb.velocity.x, bounceHeight);
+            if (isGrounded) ChangeState(bouncingState);
         }
     }
 
     private void GroundLogic()
     {
-        if (isOnPlatform) isGrounded = true;
         if (isGrounded)
         {
             //fallDistance = 0;
@@ -175,6 +164,7 @@ public class PlayerController : MonoBehaviour
         {
             rb.gravityScale = jumpingGravity;
         }
+        if (isOnPlatform) isGrounded = true;
     }
 
     public void Respawn()
@@ -195,7 +185,7 @@ public class PlayerController : MonoBehaviour
         anim.transform.position = newPosition;
     }
 
-    private void UpdateColor()
+    public void UpdateColor()
     {
         if (isDead)
         {
@@ -213,17 +203,11 @@ public class PlayerController : MonoBehaviour
 
         if (isDead) return;
 
-        if (fallDistance >= fallRed && fallDistance <= red)
-        {
-            float t = fallDistance/4 ; // 计算插值比例
-            sr.color = Color.Lerp(normalColor, fallColor, t); // 颜色插值
-        }
-        else if (fallDistance > red && fallDistance < bounce)
+        if (fallDistance >= red && fallDistance < bounce)
         {
             sr.color = fallColor;
         }
-
-        else if(fallDistance > bounce)
+        else if (fallDistance > bounce)
         {
             sr.color = bounceColor;
             if (isGrounded && !isColorCoroutineRunning)
@@ -231,8 +215,14 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(SetDefaultColor(0.8f));
             }
         }
+
+        //else sr.color = normalColor;
     }
 
+    public void StartSetDefaultColor(float waitForSeconds)
+    {
+        StartCoroutine(SetDefaultColor(waitForSeconds));
+    }
     private IEnumerator SetDefaultColor(float waitForSeconds)
     {
         isColorCoroutineRunning = true;
@@ -271,29 +261,6 @@ public class PlayerController : MonoBehaviour
         anim.transform.position = newPosition;
     }
 
-    //private void IsFallingLogic() //坠落逻辑
-    //{
-    //    if (rb.velocity.y < 0 && !isGrounded)
-    //    {
-    //        isFalling = true;
-    //    }
-    //    else
-    //    {
-    //        isFalling = false;
-    //    }
-
-
-    //    if (!isFalling)
-    //    {
-    //        highestPos = transform.position.y;
-    //        fallDistance = 0;
-    //    }
-    //    else
-    //    {
-    //        fallDistance = highestPos - transform.position.y;
-    //    }
-    //}
-
     private float IsFallingLogic() //坠落逻辑
     {
         if (rb.velocity.y < 0 && !isGrounded)
@@ -325,14 +292,14 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(headCheck.position, headCheck.position + Vector3.up *headCheckDistance);
+        Gizmos.DrawLine(headCheck.position, headCheck.position + Vector3.up * headCheckDistance);
     }
 
     private void ApplyMovement()
     {
         if (isDead)  //空格重开
         {
-            if(Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 Respawn();
                 RespawnSystemAction?.Invoke();
@@ -358,7 +325,7 @@ public class PlayerController : MonoBehaviour
             //isJumpLocked = false;
             ChangeState(airState);
         }
-        
+
         // 跳跃时间控制
         if (isJumping)
         {
@@ -381,6 +348,61 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x, 0);
             transform.position = new Vector2(transform.position.x, lockedYPosition);
+        }
+    }
+
+
+    private bool rotating; // 控制是否正在旋转或者外部中断
+    private Coroutine bounceRotateCoroutine = null; // 用于保存协程的引用
+    public void StopBounceRotate()
+    {
+        // 如果协程正在运行，停止它
+        if (bounceRotateCoroutine != null)
+        {
+            StopCoroutine(bounceRotateCoroutine);
+            bounceRotateCoroutine = null;
+        }
+
+        rotating = false;
+        anim.transform.rotation = Quaternion.identity;
+    }
+    private void StartBounceRotate(float speed)
+    {
+        if (bounceRotateCoroutine == null)
+        {
+            bounceRotateCoroutine = StartCoroutine(BounceRotate(speed));
+        }
+    }
+    private IEnumerator BounceRotate(float speed)
+    {
+        float totalRotation = 0f; // 累计旋转角度
+        rotating = true;
+        while (rotating)
+        {
+            //每帧旋转角度
+            float rotationAmount = speed * Time.deltaTime;
+            anim.transform.Rotate(Vector3.forward, rotationAmount);
+
+            // 累计旋转角度
+            totalRotation += rotationAmount;
+
+            // 检查是否完成360度旋转或者外部中断
+            if (totalRotation >= 360f)
+            {
+                // 旋转完成，停止旋转
+                rotating = false;
+
+                // 重置旋转角度
+                totalRotation = 0f;
+
+                // 复原rotation到0,0,0
+                anim.transform.rotation = Quaternion.identity;
+
+                bounceRotateCoroutine = null;
+
+                yield break;
+            }
+            yield return null;
         }
     }
 
