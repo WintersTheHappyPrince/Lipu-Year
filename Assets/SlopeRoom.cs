@@ -6,18 +6,18 @@ using UnityEngine.Windows;
 
 public class SlopeRoom : MonoBehaviour
 {
-    private Collider2D cd;
+    //private Collider2D cd;
     private PlayerController player;
 
     private void Start()
     {
-        cd = GetComponent<Collider2D>();
+        //cd = GetComponent<Collider2D>();
         player = PlayerManager.instance.player;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Enter Trigger");
+        //Debug.Log("Enter Trigger");
         if(collision.CompareTag("Player"))
         {
             StartCoroutine(nameof(SlopeCheckOn));
@@ -26,7 +26,7 @@ public class SlopeRoom : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        Debug.Log("Exit Trigger");
+        //Debug.Log("Exit Trigger");
         if (collision.CompareTag("Player"))
         {
             StopAllCoroutines();
@@ -48,7 +48,7 @@ public class SlopeRoom : MonoBehaviour
                 {
                     if ((!player.isMoving) || (player.isMoving && player.xInput == 1))
                     {
-                        Debug.Log("slopeState");
+                        //Debug.Log("slopeState");
                         player.ChangeState(player.slopeState);
 
                         if (!player.isMoving)

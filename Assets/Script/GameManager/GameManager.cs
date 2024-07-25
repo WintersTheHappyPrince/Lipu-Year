@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        blockPlayer = GameObject.Find("BlockPlayer");
+        blockPlayer = GameObject.FindWithTag("PlayerBlocker");
 
         checkpointManager.CheckpointSave += Save;
 

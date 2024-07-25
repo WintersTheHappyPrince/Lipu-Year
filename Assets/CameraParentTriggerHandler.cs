@@ -11,10 +11,16 @@ public class CameraParentTriggerHandler : MonoBehaviour
     private float startTime;
     private bool isMoving = false;
 
+    private GameObject gridLine;
+    private bool isActive;
+
     void Start()
     {
-        blockPlayer = GameObject.Find("BlockPlayer");
+        blockPlayer = GameObject.FindWithTag("PlayerBlocker");
         blockPlayer.SetActive(false);
+
+        gridLine = GetComponentInChildren<GridDrawer>()?.gameObject;
+
         // 获取所有子对象的Collider
         Collider2D[] childColliders = GetComponentsInChildren<Collider2D>();
         foreach (var childCollider in childColliders)
@@ -42,6 +48,12 @@ public class CameraParentTriggerHandler : MonoBehaviour
                 transform.position = targetPosition; // 确保最终位置准确
                 isMoving = false; // 停止移动
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        {
+            isActive = !isActive;
+            gridLine.SetActive(isActive);
         }
     }
 
