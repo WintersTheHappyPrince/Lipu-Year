@@ -22,17 +22,20 @@ public class PlayerController : MonoBehaviour
     #endregion
     #region Color and state
     [HideInInspector] public Color normalColor;
+    [SerializeField] private float fallRed=1.5f;
     [SerializeField] private float red = 1.7f;
     [HideInInspector] public Color fallColor;
     public Color deadColor;
-    [HideInInspector] public Color bounceColor;
+    private float bounce = 4f;
+    public Color bounceColor;
     [HideInInspector] public Color drillColor;
     [HideInInspector] public Color invertColor;
+    private bool isColorCoroutineRunning;
     #endregion
     #region Move info
     private float moveSpeed = 6f;
     [SerializeField] private float jumpForce = 13f;
-    public float bounceHeight = 4f;
+    public float bounceHeight = 18f;
     public float drillSpeed = 2f;
     public float invertGravityThreshold = 8f;
     public float xInput;
@@ -69,12 +72,12 @@ public class PlayerController : MonoBehaviour
 
     private float highestPos;
     public float fallDistance;
-    [SerializeField] private float fallRed=1.5f;
     #endregion
     #region Slope
     [SerializeField] private bool isOnRightSlope;
     [SerializeField] private bool isOnLeftSlope;
     #endregion
+    [SerializeField] private float testFloat;
     public System.Action RespawnSystemAction;
 
     private void Start()
@@ -128,28 +131,11 @@ public class PlayerController : MonoBehaviour
         // 更新颜色
         UpdateColor();
 
-        if (isOnPlatform) isGrounded = true;
-
         //摔死了，man
-        if (fallDistance > red)
-        {
-            if (isGrounded)
-            {
-                Die();
-                if (!killedByNail) killedByFall = true;
-            }
-        }
+        FallDistanceState();
 
-        if (isGrounded)
-        {
-            //fallDistance = 0;
-            if(!isJumping)  rb.gravityScale = defaultGravity;
-        }
-
-        if (!isGrounded)
-        {
-            rb.gravityScale = jumpingGravity;
-        }
+        //触地相关判定
+        GroundLogic();
 
         // 记录坠落高度
         IsFallingLogic();
@@ -160,11 +146,44 @@ public class PlayerController : MonoBehaviour
         stateMachine.Update();
     }
 
+    private void FallDistanceState()
+    {
+        if (fallDistance > red && isGrounded && fallDistance < bounce)
+        {
+            Die();
+            if (!killedByNail) killedByFall = true;
+        }
+        else if (fallDistance > bounce && isGrounded)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, bounceHeight);
+            //if (isGrounded)
+            //{
+            //    ChangeState(bouncingState);
+            //}
+        }
+    }
+
+    private void GroundLogic()
+    {
+        if (isOnPlatform) isGrounded = true;
+        if (isGrounded)
+        {
+            //fallDistance = 0;
+            if (!isJumping) rb.gravityScale = defaultGravity;
+        }
+        if (!isGrounded)
+        {
+            rb.gravityScale = jumpingGravity;
+        }
+    }
+
     public void Respawn()
     {
+        //参数调整
         isDead = false;
         killedByFall = false;
         anim.SetBool("Dead", false);
+        sr.color = normalColor;
         //修改死亡动画位置使其匹配视觉效果
         if (killedByNail)
         {
@@ -174,7 +193,6 @@ public class PlayerController : MonoBehaviour
         Vector3 newPosition = anim.transform.position;
         newPosition.y += 0.12f;
         anim.transform.position = newPosition;
-        
     }
 
     private void UpdateColor()
@@ -195,17 +213,32 @@ public class PlayerController : MonoBehaviour
 
         if (isDead) return;
 
-        if (fallDistance >= fallRed && fallDistance <= 3)
+        if (fallDistance >= fallRed && fallDistance <= red)
         {
             float t = fallDistance/4 ; // 计算插值比例
             sr.color = Color.Lerp(normalColor, fallColor, t); // 颜色插值
         }
-        else if (fallDistance > 3)
+        else if (fallDistance > red && fallDistance < bounce)
         {
             sr.color = fallColor;
         }
-        else sr.color = normalColor;
 
+        else if(fallDistance > bounce)
+        {
+            sr.color = bounceColor;
+            if (isGrounded && !isColorCoroutineRunning)
+            {
+                StartCoroutine(SetDefaultColor(0.8f));
+            }
+        }
+    }
+
+    private IEnumerator SetDefaultColor(float waitForSeconds)
+    {
+        isColorCoroutineRunning = true;
+        yield return new WaitForSeconds(waitForSeconds);
+        if (!isDead) sr.color = normalColor;
+        isColorCoroutineRunning = false;
     }
 
     private void Flip()
@@ -238,7 +271,30 @@ public class PlayerController : MonoBehaviour
         anim.transform.position = newPosition;
     }
 
-    private void IsFallingLogic() //坠落逻辑
+    //private void IsFallingLogic() //坠落逻辑
+    //{
+    //    if (rb.velocity.y < 0 && !isGrounded)
+    //    {
+    //        isFalling = true;
+    //    }
+    //    else
+    //    {
+    //        isFalling = false;
+    //    }
+
+
+    //    if (!isFalling)
+    //    {
+    //        highestPos = transform.position.y;
+    //        fallDistance = 0;
+    //    }
+    //    else
+    //    {
+    //        fallDistance = highestPos - transform.position.y;
+    //    }
+    //}
+
+    private float IsFallingLogic() //坠落逻辑
     {
         if (rb.velocity.y < 0 && !isGrounded)
         {
@@ -257,8 +313,9 @@ public class PlayerController : MonoBehaviour
         else
         {
             fallDistance = highestPos - transform.position.y;
-            //Debug.Log("Fall Distance: " + fallDistance);
         }
+
+        return fallDistance;
     }
 
     private void OnDrawGizmos()  //检测射线

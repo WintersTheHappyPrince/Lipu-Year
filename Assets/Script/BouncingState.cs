@@ -13,10 +13,7 @@ public class BouncingState : PlayerState
 
     public override void Update()
     {
-        if (player.isGrounded)
-        {
-            player.ChangeState(player.idleState);
-        }
+        
     }
 
     public override void Exit()

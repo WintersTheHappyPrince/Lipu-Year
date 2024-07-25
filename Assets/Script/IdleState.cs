@@ -6,7 +6,7 @@ public class IdleState : PlayerState
 
     public override void Enter()
     {
-        player.sr.color = player.normalColor;
+        //player.sr.color = player.normalColor;
         // 可以在这里触发静置时的动画
     }
 
