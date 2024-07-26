@@ -25,9 +25,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float red = 1.6f;
     [HideInInspector] public Color fallColor;
     public Color deadColor;
-    public float bounce = 4f;
+
+    public float bounce = 4f; //进入弹跳需要的格数
     public Color bounceColor;
-    [HideInInspector] public Color drillColor;
+
+    public float drill = 6f; //进入钻地需要的格数
+    public Color drillColor;
+    public Color drillingColor = Color.black;
+
     [HideInInspector] public Color invertColor;
     public bool isColorCoroutineRunning;
     #endregion
@@ -74,6 +79,7 @@ public class PlayerController : MonoBehaviour
     #endregion
     [SerializeField] private float testFloat;
     public System.Action RespawnSystemAction;
+
 
     private void Start()
     {
@@ -145,11 +151,14 @@ public class PlayerController : MonoBehaviour
             Die();
             if (!killedByNail) killedByFall = true;
         }
-        else if (fallDistance > bounce)
+        else if (fallDistance > bounce && fallDistance < drill)
         {
-            StartBounceRotate(720);
             //rb.velocity = new Vector2(rb.velocity.x, bounceHeight);
             if (isGrounded) ChangeState(bouncingState);
+        }
+        else if (fallDistance > drill)
+        {
+            ChangeState(drillingState);
         }
     }
 
@@ -157,13 +166,14 @@ public class PlayerController : MonoBehaviour
     {
         if (isGrounded)
         {
-            //fallDistance = 0;
-            if (!isJumping) rb.gravityScale = defaultGravity;
+            if (!isJumping) 
+                rb.gravityScale = defaultGravity;
         }
-        if (!isGrounded)
+        else
         {
             rb.gravityScale = jumpingGravity;
         }
+
         if (isOnPlatform) isGrounded = true;
     }
 
@@ -189,25 +199,26 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead)
         {
-            if (killedByFall == true)
-            {
-                sr.color = fallColor;
-                return;
-            }
-            else if (killedByNail == true)
-            {
-                sr.color = deadColor;
-                return;
-            }
-        }
+            sr.color = killedByFall ? fallColor : deadColor;
+            return;
 
-        if (isDead) return;
+            //if (killedByFall == true)
+            //{
+            //    sr.color = fallColor;
+            //    return;
+            //}
+            //else if (killedByNail == true)
+            //{
+            //    sr.color = deadColor;
+            //    return;
+            //}
+        }
 
         if (fallDistance >= red && fallDistance < bounce)
         {
             sr.color = fallColor;
         }
-        else if (fallDistance > bounce)
+        else if (fallDistance > bounce && fallDistance < drill)
         {
             sr.color = bounceColor;
             if (isGrounded && !isColorCoroutineRunning)
@@ -351,7 +362,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    #region BounceLogic
+    //此处实现动画功能，弹跳功能写在进入弹跳状态的代码中
     private bool rotating; // 控制是否正在旋转或者外部中断
     private Coroutine bounceRotateCoroutine = null; // 用于保存协程的引用
     public void StopBounceRotate()
@@ -366,7 +378,7 @@ public class PlayerController : MonoBehaviour
         rotating = false;
         anim.transform.rotation = Quaternion.identity;
     }
-    private void StartBounceRotate(float speed)
+    public void StartBounceRotate(float speed)
     {
         if (bounceRotateCoroutine == null)
         {
@@ -411,6 +423,11 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
     }
+    #endregion
+
+    #region DrillLogic
+
+    #endregion
 
     public void ChangeState(PlayerState newState)
     {

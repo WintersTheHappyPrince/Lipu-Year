@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using static PlayerController;
 
 public class DrillingState : PlayerState
 {
@@ -7,20 +9,17 @@ public class DrillingState : PlayerState
     public override void Enter()
     {
         player.sr.color = player.drillColor;
-        player.rb.velocity = new Vector2(0, -player.drillSpeed);
-        // 可以在这里触发钻地状态的动画
     }
 
     public override void Update()
     {
-        if (player.isGrounded)
-        {
-            player.ChangeState(player.idleState);
-        }
+       
     }
 
     public override void Exit()
     {
+        player.fallDistance = 0;
+        Debug.Log("Exit Drilling State");
         // 离开钻地状态时的逻辑
     }
 }

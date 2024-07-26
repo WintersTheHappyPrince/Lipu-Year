@@ -8,13 +8,16 @@ public class StateMachine
     {
         if (currentState != null)
         {
-            //Debug.Log("Exit " + currentState);
+            Debug.Log("Exit " + currentState);
             currentState.Exit();
         }
 
-        currentState = newState;
-        currentState.Enter();
-        //Debug.Log("Enter " + currentState);
+        if(newState != currentState)
+        {
+            currentState = newState;
+            currentState.Enter();
+        }
+        Debug.Log("Enter " + currentState);
     }
 
     public void Update()
@@ -23,5 +26,7 @@ public class StateMachine
         {
             currentState.Update();
         }
+
+        //Debug.Log("currentState " + currentState);
     }
 }
