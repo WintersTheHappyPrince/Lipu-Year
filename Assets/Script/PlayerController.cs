@@ -130,8 +130,8 @@ public class PlayerController : MonoBehaviour
         // 更新颜色
         UpdateColor();
 
-        //触地相关判定
-        GroundLogic();
+        //滞空重力
+        GravityChange();
 
         // 记录坠落高度
         IsFallingLogic();
@@ -170,7 +170,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void GroundLogic()
+    private void GravityChange()
     {
         //if (drillingCoroutineRunning) return;
 
