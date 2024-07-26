@@ -9,6 +9,7 @@ public class DrillingState : PlayerState
     public override void Enter()
     {
         player.sr.color = player.drillColor;
+        Debug.Log("Enter Drilling State");
     }
 
     public override void Update()

@@ -8,7 +8,7 @@ public class StateMachine
     {
         if (currentState != null)
         {
-            Debug.Log("Exit " + currentState);
+            //Debug.Log("Exit " + currentState);
             currentState.Exit();
         }
 
@@ -17,7 +17,7 @@ public class StateMachine
             currentState = newState;
             currentState.Enter();
         }
-        Debug.Log("Enter " + currentState);
+        //Debug.Log("Enter " + currentState);
     }
 
     public void Update()

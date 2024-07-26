@@ -643,10 +643,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1476650990}
-  - {fileID: 1913631651}
-  - {fileID: 921146400}
+  m_Children: []
   m_Father: {fileID: 1175434684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!66 &319887419
@@ -64268,16 +64265,16 @@ MonoBehaviour:
   red: 1.6
   fallColor: {r: 1, g: 0, b: 0, a: 1}
   deadColor: {r: 0.16464932, g: 0.18467423, b: 0.18867922, a: 1}
-  bounce: 4
+  bounce: 3.2
   bounceColor: {r: 0.7803922, g: 0.5294118, b: 0.882353, a: 1}
+  bounceHeight: 16
   drill: 6
   drillColor: {r: 0, g: 0, b: 1, a: 1}
   drillingColor: {r: 0, g: 0, b: 0, a: 1}
   invertColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   isColorCoroutineRunning: 0
   jumpForce: 12
-  bounceHeight: 18
-  drillSpeed: 2
+  drillSpeed: 6
   invertGravityThreshold: 8
   xInput: 0
   isJumping: 0
@@ -64288,7 +64285,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheck: {fileID: 1283763553}
-  groundCheckRadius: 0.35
+  groundCheckRadius: 0.2
   headCheck: {fileID: 2014154491}
   headCheckDistance: 0.2
   isDead: 0
@@ -64326,7 +64323,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!4 &456854059
 Transform:
@@ -64337,7 +64334,7 @@ Transform:
   m_GameObject: {fileID: 456854055}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25, y: 15.5, z: 0}
+  m_LocalPosition: {x: -26.25, y: 15.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -65037,7 +65034,7 @@ GameObject:
   m_Component:
   - component: {fileID: 616547982}
   - component: {fileID: 616547984}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: RightCameraColliderBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85218,7 +85215,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 324121540, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: 1579933958, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 2.6219878
+      m_AnimationSpeed: 1.3546698
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 4, y: 5, z: 0}
@@ -85227,7 +85224,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 731411369, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -214476059, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.6395746
+      m_AnimationSpeed: 1.9089234
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 4, y: 6, z: 0}
@@ -85236,7 +85233,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 731411369, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -214476059, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.5527033
+      m_AnimationSpeed: 1.4857173
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 4, y: 7, z: 0}
@@ -85245,7 +85242,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 731411369, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -214476059, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.2837083
+      m_AnimationSpeed: 1.772116
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -86316,7 +86313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 898766942}
   - component: {fileID: 898766943}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: LeftCameraColliderBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86416,7 +86413,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 319887418}
+  m_Father: {fileID: 1175434684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &921146401
 Rigidbody2D:
@@ -86700,7 +86697,7 @@ GameObject:
   m_Component:
   - component: {fileID: 949611980}
   - component: {fileID: 949611981}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: UpCameraColliderBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91609,6 +91606,9 @@ Transform:
   - {fileID: 319887418}
   - {fileID: 2120320661}
   - {fileID: 881405415}
+  - {fileID: 921146400}
+  - {fileID: 1913631651}
+  - {fileID: 1476650990}
   m_Father: {fileID: 1373218340}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1195667145
@@ -94309,7 +94309,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1263265697}
   - component: {fileID: 1263265698}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: DownCameraColliderBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94401,7 +94401,7 @@ Transform:
   m_GameObject: {fileID: 1283763552}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.116, z: 0}
+  m_LocalPosition: {x: 0, y: -0.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -99181,7 +99181,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 71290545, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -443502895, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.6850417
+      m_AnimationSpeed: 1.5563303
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 26, y: 19, z: 0}
@@ -99190,7 +99190,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 71290545, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -443502895, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 2.7520177
+      m_AnimationSpeed: 1.0178659
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 29, y: 19, z: 0}
@@ -99199,7 +99199,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 71290545, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -443502895, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.1528771
+      m_AnimationSpeed: 1.920943
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 30, y: 19, z: 0}
@@ -99208,7 +99208,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 71290545, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -443502895, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.3297529
+      m_AnimationSpeed: 2.2368872
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -99689,7 +99689,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 319887418}
+  m_Father: {fileID: 1175434684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1476650991
 BoxCollider2D:
@@ -122757,7 +122757,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 319887418}
+  m_Father: {fileID: 1175434684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1913631652
 Rigidbody2D:
@@ -131795,7 +131795,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 196210039, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: 876281472, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.6797388
+      m_AnimationSpeed: 1.6487826
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 25, y: 20, z: 0}
@@ -131804,7 +131804,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 26354815, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: 2079830166, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.5189999
+      m_AnimationSpeed: 2.1980855
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 33, y: 20, z: 0}
@@ -131813,7 +131813,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 71290545, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -443502895, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 2.7702193
+      m_AnimationSpeed: 2.6124392
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 34, y: 20, z: 0}
@@ -131822,7 +131822,7 @@ Tilemap:
       m_AnimatedSprites:
       - {fileID: 71290545, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
       - {fileID: -443502895, guid: 8903e36415f3e694bae6c58a46593151, type: 3}
-      m_AnimationSpeed: 1.1153893
+      m_AnimationSpeed: 2.2079585
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:

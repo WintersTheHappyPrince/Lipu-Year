@@ -26,10 +26,11 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public Color fallColor;
     public Color deadColor;
 
-    public float bounce = 4f; //½øÈëµ¯ÌøĞèÒªµÄ¸ñÊı
+    public float bounce = 3.2f; //è¿›å…¥å¼¹è·³éœ€è¦çš„æ ¼æ•°
     public Color bounceColor;
+    public float bounceHeight = 16f;
 
-    public float drill = 6f; //½øÈë×êµØĞèÒªµÄ¸ñÊı
+    public float drill = 6f; //è¿›å…¥é’»åœ°éœ€è¦çš„æ ¼æ•°
     public Color drillColor;
     public Color drillingColor = Color.black;
 
@@ -39,7 +40,6 @@ public class PlayerController : MonoBehaviour
     #region Move info
     private float moveSpeed = 6f;
     [SerializeField] private float jumpForce = 13f;
-    public float bounceHeight = 18f;
     public float drillSpeed = 2f;
     public float invertGravityThreshold = 8f;
     public float xInput;
@@ -49,14 +49,14 @@ public class PlayerController : MonoBehaviour
     public bool isJumping;
     #endregion
     #region Character States
-    [SerializeField] private LayerMask groundLayer; // ÓÃÓÚµØÃæ¼ì²âµÄ Layer
-    [SerializeField] private LayerMask platformLayer; // ÓÃÓÚÆ½Ì¨¼ì²âµÄ Layer
-    public Transform groundCheck; // µØÃæ¼ì²âµÄÆğÊ¼µã
-    public float groundCheckRadius = 0.35f; // µØÃæ¼ì²âµÄ°ë¾¶
+    [SerializeField] private LayerMask groundLayer; // ç”¨äºåœ°é¢æ£€æµ‹çš„ Layer
+    [SerializeField] private LayerMask platformLayer; // ç”¨äºå¹³å°æ£€æµ‹çš„ Layer
+    public Transform groundCheck; // åœ°é¢æ£€æµ‹çš„èµ·å§‹ç‚¹
+    public float groundCheckRadius = 0.35f; // åœ°é¢æ£€æµ‹çš„åŠå¾„
 
     private bool headHit;
-    [SerializeField] private Transform headCheck; // Í·²¿¼ì²âµÄÆğÊ¼µã
-    [SerializeField] private float headCheckDistance = 0.2f; // Í·²¿¼ì²âµÄ¾àÀë
+    [SerializeField] private Transform headCheck; // å¤´éƒ¨æ£€æµ‹çš„èµ·å§‹ç‚¹
+    [SerializeField] private float headCheckDistance = 0.2f; // å¤´éƒ¨æ£€æµ‹çš„è·ç¦»
     private float jumpTimer;
     private bool isJumpLocked;
     private float jumpTimeCounter;
@@ -108,44 +108,69 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // ¼ì²âµØÃæ
-        isGrounded = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckRadius, groundLayer);
+        // æ£€æµ‹åœ°é¢
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        //¼ì²âÆ½Ì¨
+        //æ£€æµ‹å¹³å°
         isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
 
-        //¼ì²âÍ·²¿
+        //æ£€æµ‹å¤´éƒ¨
         headHit = Physics2D.Raycast(headCheck.position, Vector2.up, headCheckDistance, groundLayer);
     }
 
     private void Update()
     {
-        //·­×ª½ÇÉ«
+        //ç¿»è½¬è§’è‰²
         Flip();
 
-        //¿ØÖÆÊäÈë
+        //æ§åˆ¶è¾“å…¥
         ApplyMovement();
 
-        // ¸üĞÂÑÕÉ«
+        // æ›´æ–°é¢œè‰²
         UpdateColor();
 
-        //´¥µØÏà¹ØÅĞ¶¨
+        //è§¦åœ°ç›¸å…³åˆ¤å®š
         GroundLogic();
 
-        //Ë¤Âä¾àÀë×´Ì¬
-        FallDistanceState();
-
-        // ¼ÇÂ¼×¹Âä¸ß¶È
+        // è®°å½•å è½é«˜åº¦
         IsFallingLogic();
-        //Debug.Log(fallDistance);
+        Debug.Log(fallDistance);
+
+        //æ‘”è½è·ç¦»çŠ¶æ€
+        FallDistanceState();
 
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
 
         stateMachine.Update();
+
+        Debug.Log("isGrounded:  "+isGrounded);
     }
+
+    /*
+    void CheckAndDebugLayers()
+    {
+        // è·å–æ‰€æœ‰çš„å±‚æ•°é‡
+        int layerCount = 32;  // Unityæœ€å¤šæ”¯æŒ32ä¸ªå±‚
+        for (int i = 0; i < layerCount; i++)
+        {
+            // è·å–å½“å‰å±‚çš„LayerMask
+            LayerMask layerMask = 1 << i;
+
+            // æ£€æŸ¥ collider2D æ˜¯å¦è§¦ç¢°åˆ°äº†è¯¥å±‚
+            if (cd.IsTouchingLayers(layerMask))
+            {
+                // è·å–å±‚çš„åå­—
+                string layerName = LayerMask.LayerToName(i);
+                Debug.Log($"Collider is touching layer: {layerName}");
+            }
+        }
+    }
+    */ //å›¾å±‚è°ƒè¯•å·¥å…·
 
     private void FallDistanceState()
     {
+        Debug.Log("fallDistance :" + fallDistance + "isGrounded = " + isGrounded);
+
         if (fallDistance > red && isGrounded && fallDistance < bounce)
         {
             Die();
@@ -158,12 +183,17 @@ public class PlayerController : MonoBehaviour
         }
         else if (fallDistance > drill)
         {
+            if (!drillingCoroutineRunning)
+                StartCoroutine(HandleDrillingState());
+
             ChangeState(drillingState);
         }
     }
 
     private void GroundLogic()
     {
+        //if (drillingCoroutineRunning) return;
+
         if (isGrounded)
         {
             if (!isJumping) 
@@ -179,12 +209,12 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
-        //²ÎÊıµ÷Õû
+        //å‚æ•°è°ƒæ•´
         isDead = false;
         killedByFall = false;
         anim.SetBool("Dead", false);
         sr.color = normalColor;
-        //ĞŞ¸ÄËÀÍö¶¯»­Î»ÖÃÊ¹ÆäÆ¥ÅäÊÓ¾õĞ§¹û
+        //ä¿®æ”¹æ­»äº¡åŠ¨ç”»ä½ç½®ä½¿å…¶åŒ¹é…è§†è§‰æ•ˆæœ
         if (killedByNail)
         {
             killedByNail = false;
@@ -265,14 +295,14 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("Dead", true);
         isDead = true;
         rb.velocity = new Vector2(0, 0);
-        //ĞŞ¸ÄËÀÍö¶¯»­Î»ÖÃÊ¹ÆäÆ¥ÅäÊÓ¾õĞ§¹û
+        //ä¿®æ”¹æ­»äº¡åŠ¨ç”»ä½ç½®ä½¿å…¶åŒ¹é…è§†è§‰æ•ˆæœ
         if (killedByNail) return;
         Vector3 newPosition = anim.transform.position;
         newPosition.y -= 0.12f;
         anim.transform.position = newPosition;
     }
 
-    private float IsFallingLogic() //×¹ÂäÂß¼­
+    private float IsFallingLogic() //å è½é€»è¾‘
     {
         if (rb.velocity.y < 0 && !isGrounded)
         {
@@ -296,19 +326,22 @@ public class PlayerController : MonoBehaviour
         return fallDistance;
     }
 
-    private void OnDrawGizmos()  //¼ì²âÉäÏß
+    private void OnDrawGizmos()  //æ£€æµ‹å°„çº¿
     {
         if (groundCheck == null || headCheck == null) return;
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        //Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
+
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(headCheck.position, headCheck.position + Vector3.up * headCheckDistance);
+        Gizmos.DrawWireSphere(headCheck.position, headCheckDistance);
+        //Gizmos.DrawLine(headCheck.position, headCheck.position + Vector3.up * headCheckDistance);
     }
 
     private void ApplyMovement()
     {
-        if (isDead)  //¿Õ¸ñÖØ¿ª
+        if (isDead)  //ç©ºæ ¼é‡å¼€
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -319,7 +352,7 @@ public class PlayerController : MonoBehaviour
         }
 
         jumpInput = Input.GetButtonDown("Jump");
-        //ÌøÔ¾Âß¼­
+        //è·³è·ƒé€»è¾‘
         JumpLogic();
 
         xInput = Input.GetAxisRaw("Horizontal");
@@ -328,6 +361,8 @@ public class PlayerController : MonoBehaviour
 
     private void JumpLogic()
     {
+        if (drillingCoroutineRunning) return;
+
         if (jumpInput && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
@@ -337,7 +372,7 @@ public class PlayerController : MonoBehaviour
             ChangeState(airState);
         }
 
-        // ÌøÔ¾Ê±¼ä¿ØÖÆ
+        // è·³è·ƒæ—¶é—´æ§åˆ¶
         if (isJumping)
         {
             rb.gravityScale = jumpingGravity;
@@ -349,7 +384,7 @@ public class PlayerController : MonoBehaviour
                 isJumpLocked = false;
             }
         }
-        //ÌøÔ¾¶¥Í·Ê±µÄ´¦ÀíÇé¿ö
+        //è·³è·ƒé¡¶å¤´æ—¶çš„å¤„ç†æƒ…å†µ
         if (isJumping && headHit)
         {
             isJumpLocked = true;
@@ -363,12 +398,12 @@ public class PlayerController : MonoBehaviour
     }
 
     #region BounceLogic
-    //´Ë´¦ÊµÏÖ¶¯»­¹¦ÄÜ£¬µ¯Ìø¹¦ÄÜĞ´ÔÚ½øÈëµ¯Ìø×´Ì¬µÄ´úÂëÖĞ
-    private bool rotating; // ¿ØÖÆÊÇ·ñÕıÔÚĞı×ª»òÕßÍâ²¿ÖĞ¶Ï
-    private Coroutine bounceRotateCoroutine = null; // ÓÃÓÚ±£´æĞ­³ÌµÄÒıÓÃ
+    //æ­¤å¤„å®ç°åŠ¨ç”»åŠŸèƒ½ï¼Œå¼¹è·³åŠŸèƒ½å†™åœ¨è¿›å…¥å¼¹è·³çŠ¶æ€çš„ä»£ç ä¸­
+    private bool rotating; // æ§åˆ¶æ˜¯å¦æ­£åœ¨æ—‹è½¬æˆ–è€…å¤–éƒ¨ä¸­æ–­
+    private Coroutine bounceRotateCoroutine = null; // ç”¨äºä¿å­˜åç¨‹çš„å¼•ç”¨
     public void StopBounceRotate()
     {
-        // Èç¹ûĞ­³ÌÕıÔÚÔËĞĞ£¬Í£Ö¹Ëü
+        // å¦‚æœåç¨‹æ­£åœ¨è¿è¡Œï¼Œåœæ­¢å®ƒ
         if (bounceRotateCoroutine != null)
         {
             StopCoroutine(bounceRotateCoroutine);
@@ -387,33 +422,33 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator BounceRotate(float speed)
     {
-        float totalRotationChange = 0f; // ÀÛ¼ÆĞı×ª±ä»¯Á¿
+        float totalRotationChange = 0f; // ç´¯è®¡æ—‹è½¬å˜åŒ–é‡
         rotating = true;
 
         while (rotating)
         {
-            //Ã¿Ö¡Ğı×ª½Ç¶È
+            //æ¯å¸§æ—‹è½¬è§’åº¦
             float rotationAmount = speed * Time.deltaTime;
 
-            // ¸ù¾İ½ÇÉ«³¯Ïò½øĞĞĞı×ª
+            // æ ¹æ®è§’è‰²æœå‘è¿›è¡Œæ—‹è½¬
             if (!isFacingRight)
                 anim.transform.Rotate(Vector3.forward, rotationAmount);
             else
                 anim.transform.Rotate(Vector3.forward, -rotationAmount);
 
-            // ¼ÆËãĞı×ª±ä»¯Á¿
+            // è®¡ç®—æ—‹è½¬å˜åŒ–é‡
             totalRotationChange += Mathf.Abs(rotationAmount);
 
-            // ¼ì²éÊÇ·ñÍê³É360¶ÈĞı×ª»òÕßÍâ²¿ÖĞ¶Ï
+            // æ£€æŸ¥æ˜¯å¦å®Œæˆ360åº¦æ—‹è½¬æˆ–è€…å¤–éƒ¨ä¸­æ–­
             if (totalRotationChange >= 360f)
             {
-                // Ğı×ªÍê³É£¬Í£Ö¹Ğı×ª
+                // æ—‹è½¬å®Œæˆï¼Œåœæ­¢æ—‹è½¬
                 rotating = false;
 
-                // ÖØÖÃĞı×ª½Ç¶È
+                // é‡ç½®æ—‹è½¬è§’åº¦
                 totalRotationChange = 0f;
 
-                // ¸´Ô­rotationµ½0,0,0
+                // å¤åŸrotationåˆ°0,0,0
                 anim.transform.rotation = Quaternion.identity;
 
                 bounceRotateCoroutine = null;
@@ -427,6 +462,68 @@ public class PlayerController : MonoBehaviour
 
     #region DrillLogic
 
+    private bool drillingCoroutineRunning;
+
+    private IEnumerator HandleDrillingState()
+    {
+        drillingCoroutineRunning = true;
+
+        bool hasEnteredIgnoreCollision=false;
+   
+        Debug.Log("å¼€å§‹é’»åœ°åç¨‹");
+
+        while (!hasEnteredIgnoreCollision)
+        {
+            bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
+
+            Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
+
+            //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
+            cd.isTrigger = true;
+
+            if (!hasEnteredIgnoreCollision && isTouchingGround)
+            {
+                hasEnteredIgnoreCollision = true;
+                rb.gravityScale = 0;
+                rb.velocity = new Vector2(rb.velocity.x, 0);
+                rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
+                Debug.Log("å¿½ç•¥ç¢°æ’å±‚");
+            }
+            yield return null;
+        }
+
+        while (true)
+        {
+            bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
+
+            Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
+
+            if (hasEnteredIgnoreCollision && isTouchingGround)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
+            }
+
+            //yield return new WaitForSeconds(0.5f);
+
+            if (hasEnteredIgnoreCollision && !isTouchingGround)
+            {
+                Debug.Log("æ¢å¤ç¢°æ’å±‚");
+                //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
+                cd.isTrigger = false;
+                ChangeState(airState);  // å›åˆ°airStateçŠ¶æ€æˆ–è€…å…¶ä»–é€‚åˆçš„çŠ¶æ€
+                drillingCoroutineRunning = false;
+                rb.gravityScale = jumpingGravity;
+
+                yield return new WaitForSeconds(0.1f);
+                isFalling = false;
+                Debug.Log("é‡ç½®ç©å®¶æ‘”è½é«˜åº¦");
+                    
+                yield break;  // é€€å‡ºåç¨‹
+            }
+
+            yield return null;  // ç­‰å¾…ä¸‹ä¸€å¸§
+        }    
+    }
     #endregion
 
     public void ChangeState(PlayerState newState)
