@@ -376,24 +376,38 @@ public class PlayerController : MonoBehaviour
     private IEnumerator BounceRotate(float speed)
     {
         float totalRotation = 0f; // 累计旋转角度
+        float totalRotationChange = 0f; // 累计旋转变化量
         rotating = true;
+
         while (rotating)
         {
             //每帧旋转角度
             float rotationAmount = speed * Time.deltaTime;
-            anim.transform.Rotate(Vector3.forward, rotationAmount);
 
-            // 累计旋转角度
-            totalRotation += rotationAmount;
+            if(!isFacingRight)
+                anim.transform.Rotate(Vector3.forward, rotationAmount);
+            else
+                anim.transform.Rotate(Vector3.forward, -rotationAmount);
+
+            //旋转角度方向
+            if (isFacingRight)
+                // 累计旋转角度
+                totalRotation += rotationAmount;
+            else
+                totalRotation -= rotationAmount;
+
+            // 计算旋转变化量
+            totalRotationChange += Mathf.Abs(rotationAmount);
 
             // 检查是否完成360度旋转或者外部中断
-            if (totalRotation >= 360f)
+            if (totalRotationChange >= 360f)
             {
                 // 旋转完成，停止旋转
                 rotating = false;
 
                 // 重置旋转角度
                 totalRotation = 0f;
+                totalRotationChange = 0f;
 
                 // 复原rotation到0,0,0
                 anim.transform.rotation = Quaternion.identity;
