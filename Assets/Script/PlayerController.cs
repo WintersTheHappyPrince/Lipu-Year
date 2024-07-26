@@ -22,11 +22,11 @@ public class PlayerController : MonoBehaviour
     #endregion
     #region Color and state
     [HideInInspector] public Color normalColor;
-    [SerializeField] private float red = 1.6f;
+    [SerializeField] private float red = 1.7f;
     [HideInInspector] public Color fallColor;
     public Color deadColor;
 
-    public float bounce = 3.2f; //进入弹跳需要的格数
+    public float bounce = 3.8f; //进入弹跳需要的格数
     public Color bounceColor;
     public float bounceHeight = 16f;
 
@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
     public float drillSpeed = 2f;
     public float invertGravityThreshold = 8f;
     public float xInput;
-    private float jumpingGravity;
+    public float jumpingGravity;
     private float defaultGravity;
     private bool jumpInput;
     public bool isJumping;
@@ -133,18 +133,15 @@ public class PlayerController : MonoBehaviour
         //滞空重力
         GravityChange();
 
-        // 记录坠落高度
-        IsFallingLogic();
-        Debug.Log(fallDistance);
-
         //摔落距离状态
         FallDistanceState();
+        //↑↓这两个方法代码位置不能交换(原理不明)
+        // 记录坠落高度
+        IsFallingLogic();
 
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
 
         stateMachine.Update();
-
-        //Debug.Log("isGrounded:  "+isGrounded);
     }
 
     private void FallDistanceState()
@@ -494,8 +491,7 @@ public class PlayerController : MonoBehaviour
                 drillingCoroutineRunning = false;
                 rb.gravityScale = jumpingGravity;
 
-                yield return new WaitForSeconds(0.1f);
-                isFalling = false;
+                highestPos = transform.position.y;
                 Debug.Log("重置玩家摔落高度");
                     
                 yield break;  // 退出协程
