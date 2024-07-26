@@ -110,6 +110,7 @@ public class PlayerController : MonoBehaviour
     {
         // 检测地面
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        //isGrounded = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckRadius, groundLayer);
 
         //检测平台
         isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
@@ -143,29 +144,8 @@ public class PlayerController : MonoBehaviour
 
         stateMachine.Update();
 
-        Debug.Log("isGrounded:  "+isGrounded);
+        //Debug.Log("isGrounded:  "+isGrounded);
     }
-
-    /*
-    void CheckAndDebugLayers()
-    {
-        // 获取所有的层数量
-        int layerCount = 32;  // Unity最多支持32个层
-        for (int i = 0; i < layerCount; i++)
-        {
-            // 获取当前层的LayerMask
-            LayerMask layerMask = 1 << i;
-
-            // 检查 collider2D 是否触碰到了该层
-            if (cd.IsTouchingLayers(layerMask))
-            {
-                // 获取层的名字
-                string layerName = LayerMask.LayerToName(i);
-                Debug.Log($"Collider is touching layer: {layerName}");
-            }
-        }
-    }
-    */ //图层调试工具
 
     private void FallDistanceState()
     {
@@ -204,7 +184,7 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale = jumpingGravity;
         }
 
-        if (isOnPlatform) isGrounded = true;
+        //if (isOnPlatform) isGrounded = true;
     }
 
     public void Respawn()
@@ -524,6 +504,7 @@ public class PlayerController : MonoBehaviour
             yield return null;  // 等待下一帧
         }    
     }
+
     #endregion
 
     public void ChangeState(PlayerState newState)
