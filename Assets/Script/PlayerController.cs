@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Security.Principal;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ public class PlayerController : MonoBehaviour
     public Color bounceColor;
     public float bounceHeight = 16f;
 
-    public float drill = 6f; //进入钻地需要的格数
+    public float drill = 6.3f; //进入钻地需要的格数
     public Color drillColor;
     public Color drillingColor = Color.black;
 
@@ -114,6 +115,7 @@ public class PlayerController : MonoBehaviour
 
         //检测平台
         isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
+        if (isOnPlatform) isGrounded = true;
 
         //检测头部
         headHit = Physics2D.Raycast(headCheck.position, Vector2.up, headCheckDistance, groundLayer);
@@ -155,13 +157,13 @@ public class PlayerController : MonoBehaviour
         }
         else if (fallDistance > bounce && fallDistance < drill)
         {
-            StarAnimRotate();
             //rb.velocity = new Vector2(rb.velocity.x, bounceHeight);
             if (isGrounded) 
                 ChangeState(bouncingState);
         }
         else if (fallDistance > drill)
         {
+            StarAnimRotate();
             if (!drillingCoroutineRunning)
                 StartCoroutine(HandleDrillingState());
 
@@ -183,7 +185,7 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale = jumpingGravity;
         }
 
-        //if (isOnPlatform) isGrounded = true;
+        
     }
 
     public void Respawn()
@@ -211,17 +213,6 @@ public class PlayerController : MonoBehaviour
         {
             sr.color = killedByFall ? fallColor : deadColor;
             return;
-
-            //if (killedByFall == true)
-            //{
-            //    sr.color = fallColor;
-            //    return;
-            //}
-            //else if (killedByNail == true)
-            //{
-            //    sr.color = deadColor;
-            //    return;
-            //}
         }
 
         if (fallDistance >= red && fallDistance < bounce)
@@ -276,6 +267,8 @@ public class PlayerController : MonoBehaviour
         isDead = true;
         rb.velocity = new Vector2(0, 0);
         //修改死亡动画位置使其匹配视觉效果
+        anim.transform.localRotation = Quaternion.identity;
+
         if (killedByNail) return;
         Vector3 newPosition = anim.transform.position;
         newPosition.y -= 0.12f;
@@ -399,6 +392,18 @@ public class PlayerController : MonoBehaviour
 
         isAnimRotated = false;
     }
+
+    private IEnumerator AnimlocalRotation()
+    {
+        Debug.Log("复原旋转动画协程");
+        isAnimRotated = true;
+
+        anim.transform.localRotation=Quaternion.identity;
+
+        yield return new WaitForSeconds(0.5f);
+
+        isAnimRotated = false;
+    }
     #endregion
 
     #region BounceLogic
@@ -502,7 +507,7 @@ public class PlayerController : MonoBehaviour
         {
             bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
 
-            Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
+            //Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
 
             if (hasEnteredIgnoreCollision && isTouchingGround)  //钻地进行时
             {
@@ -518,8 +523,9 @@ public class PlayerController : MonoBehaviour
                 cd.isTrigger = false;
                 ChangeState(airState);  // 回到airState状态或者其他适合的状态
                 rb.gravityScale = jumpingGravity;
-                StarAnimRotate();
+                StartCoroutine(AnimlocalRotation());
                 highestPos = transform.position.y;
+
                 //Debug.Log("重置玩家摔落高度");
                 yield return new WaitForSeconds(1);    
                 drillingCoroutineRunning = false;
