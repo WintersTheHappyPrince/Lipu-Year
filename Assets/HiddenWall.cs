@@ -16,7 +16,7 @@ public class HiddenWall : MonoBehaviour
     {
         if (player.CompareTag("Player"))
         {
-            Debug.Log("check");
+            //Debug.Log("check");
             tm.color = new Color(1, 1, 1, 0.5f);
         }
         //StopAllCoroutines();

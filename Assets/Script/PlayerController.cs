@@ -146,7 +146,7 @@ public class PlayerController : MonoBehaviour
 
     private void FallDistanceState()
     {
-        Debug.Log("fallDistance :" + fallDistance + "isGrounded = " + isGrounded);
+        //Debug.Log("fallDistance :" + fallDistance + "isGrounded = " + isGrounded);
 
         if (fallDistance > red && isGrounded && fallDistance < bounce)
         {
@@ -155,8 +155,10 @@ public class PlayerController : MonoBehaviour
         }
         else if (fallDistance > bounce && fallDistance < drill)
         {
+            StarAnimRotate();
             //rb.velocity = new Vector2(rb.velocity.x, bounceHeight);
-            if (isGrounded) ChangeState(bouncingState);
+            if (isGrounded) 
+                ChangeState(bouncingState);
         }
         else if (fallDistance > drill)
         {
@@ -197,9 +199,10 @@ public class PlayerController : MonoBehaviour
             killedByNail = false;
             return;
         }
-        Vector3 newPosition = anim.transform.position;
-        newPosition.y += 0.12f;
-        anim.transform.position = newPosition;
+        //Vector3 newPosition = anim.transform.position;
+        //newPosition.y += 0.12f;
+        //anim.transform.position = newPosition;
+        anim.transform.localPosition = new Vector3(0, 0.25f, 0);
     }
 
     public void UpdateColor()
@@ -338,7 +341,7 @@ public class PlayerController : MonoBehaviour
 
     private void JumpLogic()
     {
-        if (drillingCoroutineRunning) return;
+        if (drillingCoroutineRunning || rotating) return;
 
         if (jumpInput && isGrounded)
         {
@@ -373,6 +376,30 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector2(transform.position.x, lockedYPosition);
         }
     }
+
+    #region AnimRotate
+
+    private bool isAnimRotated;
+
+    public void StarAnimRotate()
+    {
+        if (!isAnimRotated)
+            StartCoroutine(AnimRotate());
+    }
+
+    private IEnumerator AnimRotate()
+    {
+        Debug.Log("旋转动画协程");
+
+        isAnimRotated = true;
+
+        anim.transform.Rotate(Vector3.back, 180f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        isAnimRotated = false;
+    }
+    #endregion
 
     #region BounceLogic
     //此处实现动画功能，弹跳功能写在进入弹跳状态的代码中
@@ -428,6 +455,8 @@ public class PlayerController : MonoBehaviour
                 // 复原rotation到0,0,0
                 anim.transform.rotation = Quaternion.identity;
 
+                ChangeState(airState);
+
                 bounceRotateCoroutine = null;
 
                 yield break;
@@ -439,7 +468,7 @@ public class PlayerController : MonoBehaviour
 
     #region DrillLogic
 
-    private bool drillingCoroutineRunning;
+    public bool drillingCoroutineRunning;
 
     private IEnumerator HandleDrillingState()
     {
@@ -449,7 +478,7 @@ public class PlayerController : MonoBehaviour
    
         Debug.Log("开始钻地协程");
 
-        while (!hasEnteredIgnoreCollision)
+        while (!hasEnteredIgnoreCollision) //第一次接触地面
         {
             bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
 
@@ -469,34 +498,34 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        while (true)
+        while (true)  //钻入地面
         {
             bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
 
             Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
 
-            if (hasEnteredIgnoreCollision && isTouchingGround)
+            if (hasEnteredIgnoreCollision && isTouchingGround)  //钻地进行时
             {
                 rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
             }
 
             //yield return new WaitForSeconds(0.5f);
 
-            if (hasEnteredIgnoreCollision && !isTouchingGround)
+            if (hasEnteredIgnoreCollision && !isTouchingGround || isDead)  //退出钻地
             {
                 Debug.Log("恢复碰撞层");
                 //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
                 cd.isTrigger = false;
                 ChangeState(airState);  // 回到airState状态或者其他适合的状态
-                drillingCoroutineRunning = false;
                 rb.gravityScale = jumpingGravity;
-
+                StarAnimRotate();
                 highestPos = transform.position.y;
-                Debug.Log("重置玩家摔落高度");
-                    
+                //Debug.Log("重置玩家摔落高度");
+                yield return new WaitForSeconds(1);    
+                drillingCoroutineRunning = false;
                 yield break;  // 退出协程
             }
-
+            
             yield return null;  // 等待下一帧
         }    
     }
