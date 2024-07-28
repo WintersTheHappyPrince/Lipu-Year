@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
 
     public float bounce = 3.8f; //进入弹跳需要的格数
     public Color bounceColor;
-    public float bounceHeight = 16f;
+    public float bounceHeight = 15f;
 
     public float drill = 6.3f; //进入钻地需要的格数
     public Color drillColor;
@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float headCheckDistance = 0.2f; // 头部检测的距离
     private float jumpTimer;
     private bool isJumpLocked;
-    private float jumpTimeCounter;
+    public float jumpTimeCounter;
     private float jumpDuration = 0.5f;
     private float lockedYPosition;
 
@@ -185,7 +185,6 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale = jumpingGravity;
         }
 
-        
     }
 
     public void Respawn()
@@ -334,15 +333,18 @@ public class PlayerController : MonoBehaviour
 
     private void JumpLogic()
     {
-        if (drillingCoroutineRunning || rotating) return;
+        if (drillingCoroutineRunning) return;
 
         if (jumpInput && isGrounded)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            isJumping = true;
-            jumpTimeCounter = 0f;
-            //isJumpLocked = false;
-            ChangeState(airState);
+            if (!rotating) //bounce判断符
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                isJumping = true;
+                jumpTimeCounter = 0f;
+                //isJumpLocked = false;
+                ChangeState(airState);
+            }
         }
 
         // 跳跃时间控制

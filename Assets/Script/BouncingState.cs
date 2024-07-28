@@ -6,6 +6,9 @@ public class BouncingState : PlayerState
 
     public override void Enter()
     {
+        //跳跃顶头
+        player.jumpTimeCounter = 0;
+        player.isJumping = true;
         //player.sr.color = player.bounceColor;
         player.rb.velocity = new Vector2(player.rb.velocity.x, player.bounceHeight);
         // 可以在这里触发弹跳状态的动画
