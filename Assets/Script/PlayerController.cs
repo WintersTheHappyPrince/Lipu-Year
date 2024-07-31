@@ -49,8 +49,8 @@ public class PlayerController : MonoBehaviour
     public float drillSpeed = 2f;
     public float invertGravityThreshold = 8f;
     public float xInput;
-    public float jumpingGravity;
-    private float defaultGravity;
+    private float jumpingGravity = 3f;
+    private float defaultGravity = 8f;
     private bool jumpInput;
     public bool isJumping;
     #endregion
@@ -60,11 +60,11 @@ public class PlayerController : MonoBehaviour
     public Transform groundCheck; // 地面检测的起始点
     public float groundCheckRadius = 0.35f; // 地面检测的半径
 
-    private bool headHit;
+    public bool headHit;
     [SerializeField] private Transform headCheck; // 头部检测的起始点
     [SerializeField] private float headCheckDistance = 0.2f; // 头部检测的距离
     private float jumpTimer;
-    private bool isJumpLocked;
+    public bool isJumpLocked;
     public float jumpTimeCounter;
     private float jumpDuration = 0.5f;
     private float lockedYPosition;
@@ -91,9 +91,6 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         highestPos = transform.position.y;
-
-        defaultGravity = 8;
-        jumpingGravity = 3;
 
         anim = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();
@@ -124,13 +121,20 @@ public class PlayerController : MonoBehaviour
         if (isOnPlatform) isGrounded = true;
 
         //检测头部
-        headHit = Physics2D.Raycast(headCheck.position, Vector2.up, headCheckDistance, groundLayer);
+        headHit = Physics2D.OverlapCircle(headCheck.position, headCheckDistance, groundLayer);
     }
 
     private void Update()
     {
-        if (isDead)  //空格重开
+        //空格重开
+        if (isDead)  
         {
+            transform.position = transform.position;
+            if (killedByFall)
+                sr.color = fallColor;
+            else if (killedByNail)
+                sr.color = deadColor;
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Respawn();
@@ -164,8 +168,12 @@ public class PlayerController : MonoBehaviour
 
         stateMachine.Update();
 
-        if (isInverted)
-            InvertedLogic();
+        InvertedLogic();
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            InvertedSetup();
+        }
     }
 
     private void FallDistanceState()
@@ -179,7 +187,6 @@ public class PlayerController : MonoBehaviour
         }
         else if (fallDistance > bounce && fallDistance < drill)
         {
-            //rb.velocity = new Vector2(rb.velocity.x, bounceHeight);
             if (isGrounded) 
                 ChangeState(bouncingState);
         }
@@ -199,7 +206,6 @@ public class PlayerController : MonoBehaviour
             if (isGrounded)
             {
                 InvertedSetup();
-                isInverted = !isInverted;
             }
         }
     }
@@ -241,12 +247,6 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateColor()
     {
-        if (isDead)
-        {
-            sr.color = killedByFall ? fallColor : deadColor;
-            return;
-        }
-
         if (fallDistance >= red && fallDistance < bounce)
         {
             sr.color = fallColor;
@@ -317,7 +317,9 @@ public class PlayerController : MonoBehaviour
 
     private float IsFallingLogic() //坠落逻辑
     {
-        if (rb.velocity.y < 0 && !isGrounded)
+        bool isFallingCondition = isInverted ? rb.velocity.y > 0 : rb.velocity.y < 0;
+
+        if (isFallingCondition && !isGrounded)
         {
             isFalling = true;
         }
@@ -333,7 +335,8 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            fallDistance = highestPos - transform.position.y;
+            fallDistance = isInverted ? transform.position.y - highestPos : highestPos - transform.position.y;
+            //根据角色翻转状态决定
         }
 
         return fallDistance;
@@ -419,7 +422,7 @@ public class PlayerController : MonoBehaviour
 
         anim.transform.Rotate(Vector3.back, 180f);
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.1f);
 
         isAnimRotated = false;
     }
@@ -429,9 +432,9 @@ public class PlayerController : MonoBehaviour
         Debug.Log("复原旋转动画协程");
         isAnimRotated = true;
 
-        anim.transform.localRotation=Quaternion.identity;
+        anim.transform.localRotation = Quaternion.identity;
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.1f);
 
         isAnimRotated = false;
     }
@@ -489,7 +492,7 @@ public class PlayerController : MonoBehaviour
                 totalRotationChange = 0f;
 
                 // 复原rotation到0,0,0
-                anim.transform.rotation = Quaternion.identity;
+                anim.transform.localRotation = Quaternion.identity;
 
                 ChangeState(airState);
 
@@ -531,7 +534,8 @@ public class PlayerController : MonoBehaviour
                 hasEnteredIgnoreCollision = true;
                 rb.gravityScale = 0;
                 rb.velocity = new Vector2(rb.velocity.x, 0);
-                rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
+                //rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
+                rb.velocity = isInverted ? new Vector2(rb.velocity.x, drillSpeed) : new Vector2(rb.velocity.x, -drillSpeed);
                 Debug.Log("忽略碰撞层");
             }
             yield return null;
@@ -545,7 +549,8 @@ public class PlayerController : MonoBehaviour
 
             if (hasEnteredIgnoreCollision && isTouchingGround)  //钻地进行时
             {
-                rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
+                //rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
+                rb.velocity = isInverted ? new Vector2(rb.velocity.x, drillSpeed) : new Vector2(rb.velocity.x, -drillSpeed);
             }
 
             //yield return new WaitForSeconds(0.5f);
@@ -589,18 +594,38 @@ public class PlayerController : MonoBehaviour
     private void InvertedSetup()
     {
         StartCoroutine(AnimlocalRotation());
-        transform.localRotation = Quaternion.Euler(0, 0, 180);
+
+        // 如果已反转,复原,如果未反转,执行反转
+        if (isInverted)
+        {
+            transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            transform.localRotation = Quaternion.Euler(0, 0, 180);
+        }
+
         defaultGravity = -defaultGravity;
         jumpingGravity = -jumpingGravity;
         jumpForce = -jumpForce;
+        bounceHeight = -bounceHeight;
+        isFacingRight = !isFacingRight;
+
         InvertedSystemAction?.Invoke();
         // 恢复到正常状态
         //transform.localRotation = Quaternion.identity;
+        isInverted = !isInverted;
     }
 
     private void InvertedLogic()
     {
-        
+        if (isInverted)
+        {
+            if (rb.velocity.y < 0)
+                dangerOfNails = true;
+            else
+                dangerOfNails = false;
+        }
     }
 
     #endregion

@@ -14,7 +14,6 @@ public class BouncingState : PlayerState
         // 可以在这里触发弹跳状态的动画
         player.ChangeState(player.airState);
         player.StartBounceRotate(720);
-        //player.anim.transform.Rotate(Vector3.zero, 180);
     }
 
     public override void Update()
@@ -24,6 +23,7 @@ public class BouncingState : PlayerState
 
     public override void Exit()
     {
+        player.anim.transform.rotation = Quaternion.identity;
         // 离开弹跳状态时的逻辑
     }
 }

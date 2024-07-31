@@ -88,11 +88,11 @@ public class CameraParentTriggerHandler : MonoBehaviour
                 break;
             case "UpCameraColliderBox":
                 StartMove(new Vector3(0, 16));
-                //blockPlayer.transform.position += new Vector3(0, 16);
+                blockPlayer.transform.position += new Vector3(0, 16);
                 break;
             case "DownCameraColliderBox":
                 StartMove(new Vector3(0, -16));
-                //blockPlayer.transform.position += new Vector3(0,-16);
+                blockPlayer.transform.position += new Vector3(0,-16);
                 break;
         }
     }

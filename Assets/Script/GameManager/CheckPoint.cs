@@ -42,25 +42,28 @@ public class Checkpoint : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {
-            if (state == CheckpointState.Default)
+            if (state == CheckpointState.Default && !SaveCoroutine)
             {
                 StartCoroutine(nameof(CheckpointSave));
             }
         }
     }
 
+    private bool SaveCoroutine;
     private IEnumerator CheckpointSave()
     {
+        SaveCoroutine = true;
         yield return new WaitForSeconds(0.2f);
         if (PlayerManager.instance.player.isGrounded && !PlayerManager.instance.player.isDead && !PlayerManager.instance.player.dangerOfNails)
         {
             CheckpointManager.instance.SetActiveCheckpoint(this);
         }
+        SaveCoroutine = false;
     }
 
     //private void OnTriggerEnter2D(Collider2D other)
