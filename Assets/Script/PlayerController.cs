@@ -390,7 +390,7 @@ public class PlayerController : MonoBehaviour
 
         anim.transform.Rotate(Vector3.back, 180f);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
 
         isAnimRotated = false;
     }
@@ -402,7 +402,7 @@ public class PlayerController : MonoBehaviour
 
         anim.transform.localRotation=Quaternion.identity;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
 
         isAnimRotated = false;
     }
@@ -529,7 +529,7 @@ public class PlayerController : MonoBehaviour
                 highestPos = transform.position.y;
 
                 //Debug.Log("重置玩家摔落高度");
-                yield return new WaitForSeconds(1);    
+                yield return new WaitForSeconds(0.2f);    
                 drillingCoroutineRunning = false;
                 yield break;  // 退出协程
             }

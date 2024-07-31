@@ -56,8 +56,8 @@ public class Checkpoint : MonoBehaviour
 
     private IEnumerator CheckpointSave()
     {
-        yield return new WaitForSeconds(0.2f);
-        if(PlayerManager.instance.player.isGrounded && !PlayerManager.instance.player.isDead)
+        yield return new WaitForSeconds(0.5f);
+        if(PlayerManager.instance.player.isGrounded && !PlayerManager.instance.player.isDead && !PlayerManager.instance.player.drillingCoroutineRunning)
         {
             CheckpointManager.instance.SetActiveCheckpoint(this);
         }
