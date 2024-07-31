@@ -6,7 +6,7 @@ public class InvertedState : PlayerState
 
     public override void Enter()
     {
-        player.sr.color = player.invertColor;
+        player.sr.color = player.invertedColor;
         player.rb.gravityScale = -1;
         // 可以在这里触发颠倒状态的动画
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Security.Principal;
+using Unity.VisualScripting;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ public class PlayerController : MonoBehaviour
     #endregion
     #region Color and state
     [HideInInspector] public Color normalColor;
-    [SerializeField] private float red = 1.7f;
+    [SerializeField] private float red = 1.8f;
     [HideInInspector] public Color fallColor;
     public Color deadColor;
 
@@ -35,8 +36,12 @@ public class PlayerController : MonoBehaviour
     public Color drillColor;
     public Color drillingColor = Color.black;
 
-    [HideInInspector] public Color invertColor;
+    public float inverted = 11f;
+    public bool isInverted;
+    public Color invertedColor = Color.yellow;
+
     public bool isColorCoroutineRunning;
+
     #endregion
     #region Move info
     private float moveSpeed = 6f;
@@ -123,11 +128,24 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)  //空格重开
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Respawn();
+                RespawnSystemAction?.Invoke();
+            }
+            return;
+        }
+
         //翻转角色
         Flip();
 
         //控制输入
         ApplyMovement();
+
+        //跳跃逻辑
+        JumpLogic();
 
         // 更新颜色
         UpdateColor();
@@ -137,13 +155,16 @@ public class PlayerController : MonoBehaviour
 
         //摔落距离状态
         FallDistanceState();
-        //↑↓这两个方法代码位置不能交换(原理不明)
+        //↑↓这两个方法代码位置不能交换
         // 记录坠落高度
         IsFallingLogic();
 
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
 
         stateMachine.Update();
+
+        if (isInverted)
+            InvertedLogic();
     }
 
     private void FallDistanceState()
@@ -161,13 +182,24 @@ public class PlayerController : MonoBehaviour
             if (isGrounded) 
                 ChangeState(bouncingState);
         }
-        else if (fallDistance > drill)
+        else if (fallDistance > drill && fallDistance < inverted)
         {
             StarAnimRotate();
+
             if (!drillingCoroutineRunning)
-                StartCoroutine(HandleDrillingState());
+                StartCoroutine(nameof(HandleDrillingState));
 
             ChangeState(drillingState);
+        }
+        else if (fallDistance > inverted)
+        {
+            StopDrillingCoroutine();
+
+            if (isGrounded)
+            {
+                InvertedSetup();
+                isInverted = !isInverted;
+            }
         }
     }
 
@@ -225,6 +257,14 @@ public class PlayerController : MonoBehaviour
             {
                 StartCoroutine(SetDefaultColor(0.8f));
             }
+        }
+        else if(fallDistance>drill && fallDistance < inverted)
+        {
+            sr.color = drillColor;
+        }
+        else if (fallDistance > inverted)
+        {
+            sr.color = invertedColor;
         }
 
         //else sr.color = normalColor;
@@ -313,26 +353,14 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovement()
     {
-        if (isDead)  //空格重开
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Respawn();
-                RespawnSystemAction?.Invoke();
-            }
-            return;
-        }
-
-        jumpInput = Input.GetButtonDown("Jump");
-        //跳跃逻辑
-        JumpLogic();
-
         xInput = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
     }
 
     private void JumpLogic()
     {
+        jumpInput = Input.GetButtonDown("Jump");
+
         if (drillingCoroutineRunning) return;
 
         if (jumpInput && isGrounded)
@@ -475,17 +503,20 @@ public class PlayerController : MonoBehaviour
 
     #region DrillLogic
 
-    public bool drillingCoroutineRunning;
+    private bool drillingCoroutineRunning;
+    public bool dangerOfNails; //玩家钻地时可以被钉子杀死
 
     private IEnumerator HandleDrillingState()
     {
         drillingCoroutineRunning = true;
 
-        bool hasEnteredIgnoreCollision=false;
-   
+        bool hasEnteredIgnoreCollision = false;
+
+        dangerOfNails = true;
+
         Debug.Log("开始钻地协程");
 
-        while (!hasEnteredIgnoreCollision) //第一次接触地面
+        while (!hasEnteredIgnoreCollision) //进入地面前
         {
             bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
 
@@ -494,7 +525,7 @@ public class PlayerController : MonoBehaviour
             //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
             cd.isTrigger = true;
 
-            if (!hasEnteredIgnoreCollision && isTouchingGround)
+            if (!hasEnteredIgnoreCollision && isTouchingGround) //第一次接触地面
             {
                 hasEnteredIgnoreCollision = true;
                 rb.gravityScale = 0;
@@ -503,7 +534,7 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("忽略碰撞层");
             }
             yield return null;
-        }
+        }//接触地面后进行下面的while循环
 
         while (true)  //钻入地面
         {
@@ -531,11 +562,41 @@ public class PlayerController : MonoBehaviour
                 //Debug.Log("重置玩家摔落高度");
                 yield return new WaitForSeconds(0.2f);    
                 drillingCoroutineRunning = false;
+
+                yield return new WaitForSeconds(1f);
+                dangerOfNails = false;
+
                 yield break;  // 退出协程
             }
             
             yield return null;  // 等待下一帧
         }    
+    }
+
+    private void StopDrillingCoroutine()
+    {
+        StopCoroutine(nameof(HandleDrillingState));
+        cd.isTrigger = false;
+        drillingCoroutineRunning = false;
+        dangerOfNails = false;
+    }
+
+    #endregion
+
+    #region InvertedLogic
+
+    private void InvertedSetup()
+    {
+        transform.localRotation = Quaternion.Euler(0, 0, 180);
+        defaultGravity = -defaultGravity;
+        jumpingGravity = -jumpingGravity;
+        // 恢复到正常状态
+        //transform.localRotation = Quaternion.identity;
+    }
+
+    private void InvertedLogic()
+    {
+        
     }
 
     #endregion

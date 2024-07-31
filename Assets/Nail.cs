@@ -7,7 +7,7 @@ public class Nail : MonoBehaviour
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {
-            if (player.fallDistance > 0.3 || player.drillingCoroutineRunning)
+            if (player.fallDistance > 0.3 || player.dangerOfNails)
             {
                 player.killedByNail = true;
                 player.Die();
