@@ -47,7 +47,7 @@ public class Checkpoint : MonoBehaviour
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {
-            if (state == CheckpointState.Default && !SaveCoroutine)
+            if (player.isGrounded && state == CheckpointState.Default && !SaveCoroutine)
             {
                 StartCoroutine(nameof(CheckpointSave));
             }

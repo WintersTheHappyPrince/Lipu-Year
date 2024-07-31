@@ -164,8 +164,6 @@ public class PlayerController : MonoBehaviour
         // 记录坠落高度
         IsFallingLogic();
 
-        isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
-
         stateMachine.Update();
 
         InvertedLogic();
@@ -358,7 +356,10 @@ public class PlayerController : MonoBehaviour
     private void ApplyMovement()
     {
         xInput = Input.GetAxisRaw("Horizontal");
+        
         rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
+
+        isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
     }
 
     private void JumpLogic()
@@ -619,13 +620,13 @@ public class PlayerController : MonoBehaviour
 
     private void InvertedLogic()
     {
-        if (isInverted)
-        {
-            if (rb.velocity.y < 0)
-                dangerOfNails = true;
-            else
-                dangerOfNails = false;
-        }
+        //if (isInverted)
+        //{
+        //    if (rb.velocity.y < -0.5)
+        //        dangerOfNails = true;
+        //    else
+        //        dangerOfNails = false;
+        //}
     }
 
     #endregion
