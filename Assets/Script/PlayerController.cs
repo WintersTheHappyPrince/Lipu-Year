@@ -85,6 +85,7 @@ public class PlayerController : MonoBehaviour
     #endregion
     [SerializeField] private float testFloat;
     public System.Action RespawnSystemAction;
+    public System.Action InvertedSystemAction;
 
 
     private void Start()
@@ -418,7 +419,7 @@ public class PlayerController : MonoBehaviour
 
         anim.transform.Rotate(Vector3.back, 180f);
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.3f);
 
         isAnimRotated = false;
     }
@@ -430,7 +431,7 @@ public class PlayerController : MonoBehaviour
 
         anim.transform.localRotation=Quaternion.identity;
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.3f);
 
         isAnimRotated = false;
     }
@@ -587,9 +588,12 @@ public class PlayerController : MonoBehaviour
 
     private void InvertedSetup()
     {
+        StartCoroutine(AnimlocalRotation());
         transform.localRotation = Quaternion.Euler(0, 0, 180);
         defaultGravity = -defaultGravity;
         jumpingGravity = -jumpingGravity;
+        jumpForce = -jumpForce;
+        InvertedSystemAction?.Invoke();
         // 恢复到正常状态
         //transform.localRotation = Quaternion.identity;
     }
