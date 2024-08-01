@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     public Color drillColor;
     public Color drillingColor = Color.black;
 
-    public float inverted = 11f;
+    public float inverted = 7.5f;
     public bool isInverted;
     public Color invertedColor = Color.yellow;
 
@@ -550,11 +550,11 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }//接触地面后进行下面的while循环
 
-        yield return new WaitForSeconds(0.2f);
+        //yield return new WaitForSeconds(0.2f);
 
         while (true)  //钻入地面
         {
-            bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
+            bool isTouchingGround = cd.IsTouchingLayers(groundLayer|platformLayer);
 
             //Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
 
