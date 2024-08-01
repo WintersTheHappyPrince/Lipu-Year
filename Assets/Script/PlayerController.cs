@@ -204,11 +204,13 @@ public class PlayerController : MonoBehaviour
         else if (fallDistance > inverted)
         {
             StopDrillingCoroutine();
-            Debug.Log("大于距离");
+            //Debug.Log("大于距离");
             if (isGrounded)
             {
-                Debug.Log("大于距离且触地");
+                //Debug.Log("大于距离且触地");
                 InvertedSetup();
+
+                StartSetDefaultColor(0.1f);
             }
         }
     }
@@ -528,15 +530,16 @@ public class PlayerController : MonoBehaviour
 
         while (!hasEnteredIgnoreCollision) //进入地面前
         {
-            bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
+            bool isTouchingGround = isGrounded;
 
             Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
 
             //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
-            cd.isTrigger = true;
+            
 
             if (!hasEnteredIgnoreCollision && isTouchingGround) //第一次接触地面
             {
+                cd.isTrigger = true;
                 hasEnteredIgnoreCollision = true;
                 rb.gravityScale = 0;
                 rb.velocity = new Vector2(rb.velocity.x, 0);
@@ -591,6 +594,7 @@ public class PlayerController : MonoBehaviour
         cd.isTrigger = false;
         drillingCoroutineRunning = false;
         dangerOfNails = false;
+        ChangeState(airState);
     }
 
     #endregion
@@ -599,7 +603,7 @@ public class PlayerController : MonoBehaviour
 
     private void InvertedSetup()
     {
-        Debug.Log("反转术式");
+        //Debug.Log("反转");
         // 如果已反转,复原,如果未反转,执行反转
         if (isInverted)
         {
@@ -619,8 +623,7 @@ public class PlayerController : MonoBehaviour
         isFacingRight = !isFacingRight;
 
         InvertedSystemAction?.Invoke();
-        // 恢复到正常状态
-        //transform.localRotation = Quaternion.identity;
+        
         isInverted = !isInverted;
     }
 

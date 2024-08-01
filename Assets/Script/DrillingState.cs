@@ -9,7 +9,7 @@ public class DrillingState : PlayerState
     public override void Enter()
     {
         player.sr.color = player.drillColor;
-        Debug.Log("Enter Drilling State");
+        //Debug.Log("Enter Drilling State");
     }
 
     public override void Update()
@@ -20,7 +20,7 @@ public class DrillingState : PlayerState
     public override void Exit()
     {
         player.fallDistance = 0;
-        Debug.Log("Exit Drilling State");
+        //Debug.Log("Exit Drilling State");
         // 离开钻地状态时的逻辑
     }
 }
