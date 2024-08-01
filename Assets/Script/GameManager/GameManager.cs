@@ -58,6 +58,10 @@ public class GameManager : MonoBehaviour
         SaveCameraPosition(Camera.main.transform.position);
         SavePlayerPosition(player.transform.position);
         SavePlayerBlockerPos(blockPlayer.transform.position);
+
+        PlayerPrefs.SetInt("CollectedGoals", GoalManager.instance.GetCollectedGoals());
+
+        PlayerPrefs.Save();
         Debug.Log("DateSave");
     }
 
@@ -66,6 +70,8 @@ public class GameManager : MonoBehaviour
         Camera.main.transform.position = LoadSavedCameraPosition();
         player.transform.position = LoadPlayerPosition();
         blockPlayer.transform.position = LoadPlayerBlockerPos();
+
+        GoalManager.instance.SetCollectedGoals(PlayerPrefs.GetInt("CollectedGoals", 0));
     }
 
     public void SavePlayerPosition(Vector3 position)
@@ -74,7 +80,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("PlayerX", position.x);
         PlayerPrefs.SetFloat("PlayerY", position.y);
         PlayerPrefs.SetFloat("PlayerZ", position.z);
-        PlayerPrefs.Save();
+        
     }
 
     public void SavePlayerBlockerPos(Vector3 position)
@@ -82,7 +88,6 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("BlockerX", blockPlayer.transform.position.x);
         PlayerPrefs.SetFloat("BlockerY", blockPlayer.transform.position.y);
         PlayerPrefs.SetFloat("BlockerZ", blockPlayer.transform.position.z);
-        PlayerPrefs.Save();
     }
 
     public void SaveCameraPosition(Vector3 position)
@@ -90,7 +95,6 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("CameraPositionX", Camera.main.transform.position.x);
         PlayerPrefs.SetFloat("CameraPositionY", Camera.main.transform.position.y);
         PlayerPrefs.SetFloat("CameraPositionZ", Camera.main.transform.position.z);
-        PlayerPrefs.Save();
     }
 
     public Vector3 LoadPlayerPosition()

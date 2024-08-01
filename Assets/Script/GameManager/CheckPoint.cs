@@ -65,20 +65,4 @@ public class Checkpoint : MonoBehaviour
         }
         SaveCoroutine = false;
     }
-
-    //private void OnTriggerEnter2D(Collider2D other)
-    //{
-    //    if (other.CompareTag("Player"))
-    //    {
-    //        PlayerController player = other.GetComponent<PlayerController>();
-    //        if (player.isGrounded)
-    //        {
-    //            if (state == CheckpointState.Default)
-    //            {
-    //                // 当玩家碰到检查点时，设置为当前激活检查点
-    //                CheckpointManager.instance.SetActiveCheckpoint(this);
-    //            }
-    //        }
-    //    }
-    //}
 }
