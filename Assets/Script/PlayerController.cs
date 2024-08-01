@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
     #endregion
     #region Move info
-    private float moveSpeed = 6f;
+    [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float jumpForce = 13f;
     public float drillSpeed = 2f;
     public float invertGravityThreshold = 8f;
@@ -126,6 +126,10 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
+        if (isOnPlatform) isGrounded = true;
+
         //空格重开
         if (isDead)  
         {
@@ -200,9 +204,10 @@ public class PlayerController : MonoBehaviour
         else if (fallDistance > inverted)
         {
             StopDrillingCoroutine();
-
+            Debug.Log("大于距离");
             if (isGrounded)
             {
+                Debug.Log("大于距离且触地");
                 InvertedSetup();
             }
         }
@@ -435,7 +440,7 @@ public class PlayerController : MonoBehaviour
 
         anim.transform.localRotation = Quaternion.identity;
 
-        yield return new WaitForSeconds(0.1f);
+        yield return null;
 
         isAnimRotated = false;
     }
@@ -542,6 +547,8 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }//接触地面后进行下面的while循环
 
+        yield return new WaitForSeconds(0.2f);
+
         while (true)  //钻入地面
         {
             bool isTouchingGround = cd.IsTouchingLayers(groundLayer);
@@ -553,8 +560,6 @@ public class PlayerController : MonoBehaviour
                 //rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
                 rb.velocity = isInverted ? new Vector2(rb.velocity.x, drillSpeed) : new Vector2(rb.velocity.x, -drillSpeed);
             }
-
-            //yield return new WaitForSeconds(0.5f);
 
             if (hasEnteredIgnoreCollision && !isTouchingGround || isDead)  //退出钻地
             {
@@ -594,8 +599,7 @@ public class PlayerController : MonoBehaviour
 
     private void InvertedSetup()
     {
-        StartCoroutine(AnimlocalRotation());
-
+        Debug.Log("反转术式");
         // 如果已反转,复原,如果未反转,执行反转
         if (isInverted)
         {
@@ -605,6 +609,8 @@ public class PlayerController : MonoBehaviour
         {
             transform.localRotation = Quaternion.Euler(0, 0, 180);
         }
+
+        StartCoroutine(AnimlocalRotation());
 
         defaultGravity = -defaultGravity;
         jumpingGravity = -jumpingGravity;
