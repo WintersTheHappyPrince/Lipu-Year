@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
         checkpointManager = FindObjectOfType<CheckpointManager>();
 
         player = FindObjectOfType<PlayerController>();
+
     }
 
     private void Start()
@@ -40,8 +41,6 @@ public class GameManager : MonoBehaviour
         checkpointManager.CheckpointSave += Save;
 
         player.RespawnSystemAction += Load;
-
-        Save();
     }
 
     private void OnDisable()
@@ -130,6 +129,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.O))
         {
             saveLoadManager.LoadGame();
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            PlayerPrefs.DeleteAll();
+            Debug.Log("PlayerPrefs.DeleteAll");
         }
     }
 }

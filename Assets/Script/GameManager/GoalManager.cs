@@ -48,7 +48,7 @@ public class GoalManager : MonoBehaviour
     {
         // 获取所有目标金币的 GoalController 实例
         GoalController[] goalControllers = FindObjectsOfType<GoalController>();
-        MapManager.instance.UpdateMapIndicators(collectedGoals, goalControllers);
+        //MapManager.instance.UpdateMapIndicators(collectedGoals, goalControllers);
     }
 
     private void UnlockFinalLock()
