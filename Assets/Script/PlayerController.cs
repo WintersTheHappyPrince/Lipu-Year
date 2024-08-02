@@ -139,7 +139,7 @@ public class PlayerController : MonoBehaviour
             else if (killedByNail)
                 sr.color = deadColor;
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetButtonDown("Jump") || Input.GetButtonDown("JoyJump"))
             {
                 Respawn();
                 RespawnSystemAction?.Invoke();
@@ -371,7 +371,7 @@ public class PlayerController : MonoBehaviour
 
     private void JumpLogic()
     {
-        jumpInput = Input.GetButtonDown("Jump");
+        jumpInput = Input.GetButtonDown("Jump") || Input.GetButtonDown("JoyJump");
 
         if (drillingCoroutineRunning) return;
 

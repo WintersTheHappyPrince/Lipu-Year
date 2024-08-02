@@ -53,7 +53,10 @@ public class CameraParentTriggerHandler : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift) ||
+            Input.GetKeyDown(KeyCode.RightShift) ||
+            Input.GetKeyDown(KeyCode.JoystickButton4) ||
+            Input.GetKeyDown(KeyCode.JoystickButton5) )
         {
             isActive = !isActive;
             if (gridLine != null)
