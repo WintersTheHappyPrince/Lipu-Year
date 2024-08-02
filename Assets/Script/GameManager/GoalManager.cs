@@ -10,6 +10,8 @@ public class GoalManager : MonoBehaviour
 
     public GameManager gameManager;
 
+    public System.Action CollectGoalSA;
+
     private void Awake()
     {
         if (instance == null)
@@ -20,6 +22,16 @@ public class GoalManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        collectedGoals = PlayerPrefs.GetInt("CollectedGoals", 0);
+
+        if (collectedGoals == 28)
+        {
+            UnlockFinalLock();
         }
     }
 
@@ -37,11 +49,14 @@ public class GoalManager : MonoBehaviour
             CompleteGame();
         }
 
-        // 更新地图显示
-        UpdateMapIndicators();
-
         // 保存游戏状态
         gameManager.Save();
+
+        // 更新地图显示
+        //UpdateMapIndicators();
+
+        // 更新显示器
+        CollectGoalSA?.Invoke();
     }
 
     private void UpdateMapIndicators()
@@ -54,7 +69,8 @@ public class GoalManager : MonoBehaviour
     private void UnlockFinalLock()
     {
         Debug.Log("Final lock unlocked!");
-        // 在这里添加打开最后一把锁的逻辑
+        GameObject finalLock = GameObject.FindWithTag("Lock");
+        finalLock?.SetActive(false);
     }
 
     private void CompleteGame()

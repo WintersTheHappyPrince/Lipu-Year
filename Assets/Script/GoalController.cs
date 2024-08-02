@@ -43,7 +43,7 @@ public class GoalController : MonoBehaviour
         goalGold.SetActive(false); // Õ£”√ goalGold
         checkPoint.SetActive(true); // ∆Ù”√ checkPoint
 
-        Color currentColor = GetRandomRainbowColor(); ;
+        Color currentColor = GetRandomRainbowColor();
 
         foreach (var numberRenderer in numberRenderers)
         {
