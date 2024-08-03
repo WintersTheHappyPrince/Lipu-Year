@@ -116,9 +116,9 @@ public class GameManager : MonoBehaviour
 
     public Vector3 LoadSavedCameraPosition()
     {
-        float x = PlayerPrefs.GetFloat("CameraPositionX", Camera.main.transform.position.x);
-        float y = PlayerPrefs.GetFloat("CameraPositionY", Camera.main.transform.position.y);
-        float z = PlayerPrefs.GetFloat("CameraPositionZ", Camera.main.transform.position.z);
+        float x = PlayerPrefs.GetFloat("CameraPositionX", 0);
+        float y = PlayerPrefs.GetFloat("CameraPositionY", 0);
+        float z = PlayerPrefs.GetFloat("CameraPositionZ", -10);
         return new Vector3(x, y, z);
     }
 

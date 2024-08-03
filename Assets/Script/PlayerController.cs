@@ -231,25 +231,6 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public void Respawn()
-    {
-        //参数调整
-        isDead = false;
-        killedByFall = false;
-        anim.SetBool("Dead", false);
-        sr.color = normalColor;
-        //修改死亡动画位置使其匹配视觉效果
-        if (killedByNail)
-        {
-            killedByNail = false;
-            return;
-        }
-        //Vector3 newPosition = anim.transform.position;
-        //newPosition.y += 0.12f;
-        //anim.transform.position = newPosition;
-        anim.transform.localPosition = new Vector3(0, 0.25f, 0);
-    }
-
     public void UpdateColor()
     {
         if (fallDistance >= red && fallDistance < bounce)
@@ -306,8 +287,33 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public TransitionEffect transitionEffect;
+
+    public void Respawn()
+    {
+        transitionEffect.PlayerRespawn();
+
+        //参数调整
+        isDead = false;
+        killedByFall = false;
+        anim.SetBool("Dead", false);
+        sr.color = normalColor;
+        //修改死亡动画位置使其匹配视觉效果
+        if (killedByNail)
+        {
+            killedByNail = false;
+            return;
+        }
+        //Vector3 newPosition = anim.transform.position;
+        //newPosition.y += 0.12f;
+        //anim.transform.position = newPosition;
+        anim.transform.localPosition = new Vector3(0, 0.25f, 0);
+    }
+
     public void Die()
     {
+        transitionEffect.PlayerDied();
+
         anim.SetBool("Dead", true);
         isDead = true;
         rb.velocity = new Vector2(0, 0);
