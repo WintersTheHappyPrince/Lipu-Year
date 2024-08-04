@@ -85,17 +85,14 @@ public class TransitionEffect : MonoBehaviour
     {
         if (player == null || maskRectTransform == null || canvas == null)
         {
-            Debug.LogError("player, maskRectTransform or canvas is not assigned.");
+            Debug.LogError("player, maskRectTransform, or canvas is not assigned.");
             return;
         }
 
         // 获取玩家在屏幕上的位置
         Vector3 screenPoint = Camera.main.WorldToScreenPoint(player.transform.position);
 
-        // 将屏幕点转换为Canvas中的本地坐标
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, screenPoint, canvas.worldCamera, out Vector2 localPoint);
-
         // 更新遮罩的位置
-        maskRectTransform.localPosition = localPoint;
+        maskRectTransform.position = screenPoint;
     }
 }
