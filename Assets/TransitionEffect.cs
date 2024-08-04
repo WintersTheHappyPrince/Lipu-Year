@@ -42,16 +42,16 @@ public class TransitionEffect : MonoBehaviour
     {
         isTransitioning = true;
         isExpanding = false;
-        UpdateMaskPosition();
         targetScale = Vector3.zero; // 目标缩放为0
+        UpdateMaskPosition();
     }
 
     public void PlayerRespawn()
     {
         isTransitioning = true;
         isExpanding = true;
-        UpdateMaskPosition();
         targetScale = Vector3.one; // 目标缩放为1
+        UpdateMaskPosition();
     }
 
     private void ShrinkMask()
@@ -62,9 +62,8 @@ public class TransitionEffect : MonoBehaviour
             return;
         }
 
-        float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
-        float smoothT = Mathf.SmoothStep(0f, 1f, t);
-        maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
+        // 使用 Time.deltaTime 和 transitionSpeed 计算缩放
+        maskRectTransform.localScale = Vector3.MoveTowards(maskRectTransform.localScale, targetScale, transitionSpeed * Time.deltaTime);
 
         if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
         {
@@ -82,9 +81,8 @@ public class TransitionEffect : MonoBehaviour
             return;
         }
 
-        float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
-        float smoothT = Mathf.SmoothStep(0f, 1f, t);
-        maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
+        // 使用 Time.deltaTime 和 transitionSpeed 计算缩放
+        maskRectTransform.localScale = Vector3.MoveTowards(maskRectTransform.localScale, targetScale, transitionSpeed * Time.deltaTime);
 
         if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
         {
@@ -93,6 +91,47 @@ public class TransitionEffect : MonoBehaviour
             // 玩家重生后其他逻辑
         }
     }
+
+
+    //private void ShrinkMask()
+    //{
+    //    if (maskRectTransform == null)
+    //    {
+    //        Debug.LogError("maskRectTransform is not assigned.");
+    //        return;
+    //    }
+
+    //    float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
+    //    float smoothT = Mathf.SmoothStep(0f, 1f, t);
+    //    maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
+
+    //    if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
+    //    {
+    //        maskRectTransform.localScale = targetScale;
+    //        isTransitioning = false;
+    //        // 玩家死亡后其他逻辑
+    //    }
+    //}
+
+    //private void ExpandMask()
+    //{
+    //    if (maskRectTransform == null)
+    //    {
+    //        Debug.LogError("maskRectTransform is not assigned.");
+    //        return;
+    //    }
+
+    //    float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
+    //    float smoothT = Mathf.SmoothStep(0f, 1f, t);
+    //    maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
+
+    //    if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
+    //    {
+    //        maskRectTransform.localScale = targetScale;
+    //        isTransitioning = false;
+    //        // 玩家重生后其他逻辑
+    //    }
+    //}
 
     private void UpdateMaskPosition()
     {

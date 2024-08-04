@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Security.Principal;
-using Unity.VisualScripting;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -131,7 +128,7 @@ public class PlayerController : MonoBehaviour
         if (isOnPlatform) isGrounded = true;
 
         //空格重开
-        if (isDead)  
+        if (isDead)
         {
             transform.position = transform.position;
             if (killedByFall)
@@ -141,7 +138,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetButtonDown("Jump") || Input.GetButtonDown("JoyJump"))
             {
-                if(!isRespawnCorRunning)
+                if (!isRespawnCorRunning)
                     StartCoroutine(Respawn());
             }
             return;
@@ -189,7 +186,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (fallDistance > bounce && fallDistance < drill)
         {
-            if (isGrounded) 
+            if (isGrounded)
                 ChangeState(bouncingState);
         }
         else if (fallDistance > drill && fallDistance < inverted)
@@ -221,7 +218,7 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded)
         {
-            if (!isJumping) 
+            if (!isJumping)
                 rb.gravityScale = defaultGravity;
         }
         else
@@ -245,7 +242,7 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(SetDefaultColor(0.8f));
             }
         }
-        else if(fallDistance>drill && fallDistance < inverted)
+        else if (fallDistance > drill && fallDistance < inverted)
         {
             sr.color = drillColor;
         }
@@ -402,7 +399,7 @@ public class PlayerController : MonoBehaviour
     private void ApplyMovement()
     {
         xInput = Input.GetAxisRaw("Horizontal");
-        
+
         rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
 
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
@@ -574,7 +571,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
 
             //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
-            
+
 
             if (!hasEnteredIgnoreCollision && isTouchingGround) //第一次接触地面
             {
@@ -593,7 +590,7 @@ public class PlayerController : MonoBehaviour
 
         while (true)  //钻入地面
         {
-            bool isTouchingGround = cd.IsTouchingLayers(groundLayer|platformLayer);
+            bool isTouchingGround = cd.IsTouchingLayers(groundLayer | platformLayer);
 
             //Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
 
@@ -614,7 +611,7 @@ public class PlayerController : MonoBehaviour
                 highestPos = transform.position.y;
 
                 //Debug.Log("重置玩家摔落高度");
-                yield return new WaitForSeconds(0.2f);    
+                yield return new WaitForSeconds(0.2f);
                 drillingCoroutineRunning = false;
 
                 yield return new WaitForSeconds(1f);
@@ -622,9 +619,9 @@ public class PlayerController : MonoBehaviour
 
                 yield break;  // 退出协程
             }
-            
+
             yield return null;  // 等待下一帧
-        }    
+        }
     }
 
     private void StopDrillingCoroutine()
@@ -663,7 +660,7 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log("Player's InvertedSystemAction");
         InvertedSystemAction?.Invoke();
-        
+
         isInverted = !isInverted;
     }
 
