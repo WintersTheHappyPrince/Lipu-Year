@@ -8,6 +8,8 @@ public class GoalDisplayer : MonoBehaviour
 
     public SpriteRenderer[] numberRenderers; // 数字的SpriteRenderer
 
+    public bool invertDisplay;
+
     void Start()
     {
         GoalManager.instance.CollectGoalSA += UpdateDisplay;
@@ -21,24 +23,37 @@ public class GoalDisplayer : MonoBehaviour
 
     void UpdateDisplay()
     {
-        if (PlayerPrefs.GetInt(gameObject.name, 0) == 1) // 0 表示未收集
+        // 获取目标金币的状态
+        bool isCollected = PlayerPrefs.GetInt(gameObject.name, 0) == 1;
+
+        // 根据 invertDisplay 的值决定显示的逻辑
+        bool shouldDisplay = invertDisplay ? !isCollected : isCollected;
+
+        if (shouldDisplay)
         {
             if (goalGold != null) goalGold.SetActive(true);
 
             Color currentColor = Color.HSVToRGB(PlayerPrefs.GetInt(gameObject.name + "ColorIndex") / 29f, 1, 1);
 
-            foreach (var numberRenderer in numberRenderers)
+            if (numberRenderers != null)
             {
-                numberRenderer.enabled = true;
-                numberRenderer.color = currentColor; // 更改 Number 的颜色
+                foreach (var numberRenderer in numberRenderers)
+                {
+                    numberRenderer.enabled = true;
+                    numberRenderer.color = currentColor; // 更改 Number 的颜色
+                }
             }
         }
         else
         {
             if (goalGold != null) goalGold.SetActive(false);
-            foreach (var numberRenderer in numberRenderers)
+
+            if (numberRenderers != null)
             {
-                numberRenderer.enabled = false;
+                foreach (var numberRenderer in numberRenderers)
+                {
+                    numberRenderer.enabled = false;
+                }
             }
         }
     }

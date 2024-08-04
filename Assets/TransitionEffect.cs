@@ -11,7 +11,7 @@ public class TransitionEffect : MonoBehaviour
     public float maxScale = 1f; // 缩放的最大值
 
     private RectTransform maskRectTransform;
-    private bool isTransitioning = false;
+    public bool isTransitioning = false;
     private bool isExpanding = false;
     private Vector3 targetScale;
 
@@ -62,7 +62,9 @@ public class TransitionEffect : MonoBehaviour
             return;
         }
 
-        maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, transitionSpeed * Time.deltaTime);
+        float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
+        float smoothT = Mathf.SmoothStep(0f, 1f, t);
+        maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
 
         if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
         {
@@ -80,7 +82,9 @@ public class TransitionEffect : MonoBehaviour
             return;
         }
 
-        maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, transitionSpeed * Time.deltaTime);
+        float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
+        float smoothT = Mathf.SmoothStep(0f, 1f, t);
+        maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
 
         if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
         {
