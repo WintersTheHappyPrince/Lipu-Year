@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
@@ -62,6 +63,8 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.SetInt("CollectedGoals", GoalManager.instance.GetCollectedGoals());
 
+        PlayerPrefs.SetInt("IsPlayerInverted", player.isInverted ? 1 : 0);
+
         PlayerPrefs.Save();
         Debug.Log("DateSave");
     }
@@ -71,6 +74,9 @@ public class GameManager : MonoBehaviour
         Camera.main.transform.position = LoadSavedCameraPosition();
         player.transform.position = LoadPlayerPosition();
         blockPlayer.transform.position = LoadPlayerBlockerPos();
+
+        Debug.Log(PlayerPrefs.GetInt("IsPlayerInverted"));
+        player.ResetInverted();
 
         GoalManager.instance.SetCollectedGoals(PlayerPrefs.GetInt("CollectedGoals", 0));
     }
@@ -124,18 +130,34 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        //if (Input.GetKeyDown(KeyCode.I))
+        //{
+        //    saveLoadManager.SaveGame();
+        //}
+        //if (Input.GetKeyDown(KeyCode.O))
+        //{
+        //    saveLoadManager.LoadGame();
+        //}
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    PlayerPrefs.DeleteAll();
+        //    Debug.Log("PlayerPrefs.DeleteAll");
+        //}
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            saveLoadManager.SaveGame();
+            StartCoroutine(Quit());
         }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            saveLoadManager.LoadGame();
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            PlayerPrefs.DeleteAll();
-            Debug.Log("PlayerPrefs.DeleteAll");
-        }
+    }
+
+    private IEnumerator Quit()
+    {
+        float startTime = Time.time;
+        float quitTimeout = 3f; // ≥¨ ± ±º‰£®√Î£©
+        while (Time.time - startTime < quitTimeout)
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+                yield break;
+            }
     }
 }

@@ -141,7 +141,8 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetButtonDown("Jump") || Input.GetButtonDown("JoyJump"))
             {
-                StartCoroutine(Respawn());
+                if(!isRespawnCorRunning)
+                    StartCoroutine(Respawn());
             }
             return;
         }
@@ -171,10 +172,10 @@ public class PlayerController : MonoBehaviour
 
         InvertedLogic();
 
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            InvertedSetup();
-        }
+        //if (Input.GetKeyDown(KeyCode.T))
+        //{
+        //    InvertedSetup();
+        //}
     }
 
     private void FallDistanceState()
@@ -288,8 +289,21 @@ public class PlayerController : MonoBehaviour
 
     public TransitionEffect transitionEffect;
 
+    private bool isRespawnCorRunning;
+
+    public void ResetInverted()
+    {
+        Debug.Log(PlayerPrefs.GetInt("IsPlayerInverted"));
+        if (PlayerPrefs.GetInt("IsPlayerInverted") == 1 && !isInverted)
+            InvertedSetup();
+        else if (PlayerPrefs.GetInt("IsPlayerInverted") == 0 && isInverted)
+            InvertedSetup();
+    }
+
     public IEnumerator Respawn()
     {
+        isRespawnCorRunning = true;
+
         transitionEffect.PlayerDied();
 
         yield return new WaitUntil(() => !transitionEffect.isTransitioning);
@@ -307,6 +321,9 @@ public class PlayerController : MonoBehaviour
         //修改（摔死）死亡动画位置使其匹配视觉效果
         anim.transform.localPosition = killedByNail ? new Vector3(0, 0.25f, 0) : new Vector3(0, 0.25f, 0);
         killedByNail = false;
+
+
+        isRespawnCorRunning = false;
     }
 
     //public void Respawn()
@@ -623,7 +640,7 @@ public class PlayerController : MonoBehaviour
 
     #region InvertedLogic
 
-    private void InvertedSetup()
+    public void InvertedSetup()
     {
         //Debug.Log("反转");
         // 如果已反转,复原,如果未反转,执行反转
@@ -644,6 +661,7 @@ public class PlayerController : MonoBehaviour
         bounceHeight = -bounceHeight;
         isFacingRight = !isFacingRight;
 
+        Debug.Log("Player's InvertedSystemAction");
         InvertedSystemAction?.Invoke();
         
         isInverted = !isInverted;

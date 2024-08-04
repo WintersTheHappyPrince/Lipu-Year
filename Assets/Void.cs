@@ -7,7 +7,10 @@ public class Void : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             PlayerController player = collision.GetComponent<PlayerController>();
+            
             player.Die();
+
+            player.sr.color = player.fallColor;
         }
     }
 }

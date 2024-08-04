@@ -11,11 +11,15 @@ public class PlatformController : MonoBehaviour
         pe = GetComponent<PlatformEffector2D>();
         player = PlayerManager.instance.player;
         player.InvertedSystemAction += PlayerInverted;
+
+        if (player.isInverted)
+            PlayerInverted();
     }
 
     private void PlayerInverted()
     {
-        if(pe.rotationalOffset == 0)
+        Debug.Log("Platform's InvertedSystemAction");
+        if (pe.rotationalOffset == 0)
         {
             pe.rotationalOffset = 180;
         }

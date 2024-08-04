@@ -8,7 +8,7 @@ public class CameraParentTriggerHandler : MonoBehaviour
     private Vector3 startPosition;
     private Vector3 targetPosition;
     private float startTime;
-    private bool isMoving = false;
+    public bool isMoving = false;
 
     private GameObject gridLine;
     private bool isActive;

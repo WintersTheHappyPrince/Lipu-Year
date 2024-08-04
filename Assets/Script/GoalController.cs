@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GoalController : MonoBehaviour
@@ -29,13 +30,27 @@ public class GoalController : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {
+            if (!collectGoalCheck)
+                StartCoroutine(CollectGoalCheck());
+        }
+    }
+
+    private bool collectGoalCheck;
+
+    private IEnumerator CollectGoalCheck()
+    {
+        collectGoalCheck = true;
+        yield return new WaitForSeconds(0.1f);
+        if (PlayerManager.instance.player.isGrounded && !PlayerManager.instance.player.isDead && !PlayerManager.instance.player.dangerOfNails)
+        {
             CollectGoal();
         }
+        collectGoalCheck = false;
     }
 
     private void CollectGoal()

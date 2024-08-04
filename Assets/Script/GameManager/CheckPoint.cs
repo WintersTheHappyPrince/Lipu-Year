@@ -14,9 +14,11 @@ public class Checkpoint : MonoBehaviour
 
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Sprite[] sprites;
+    [SerializeField] private CameraParentTriggerHandler cameraScript;
 
     private void Start()
     {
+        cameraScript = FindObjectOfType<CameraParentTriggerHandler>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         // 初始化检查点的显示图像
         UpdateSprite();
@@ -45,11 +47,11 @@ public class Checkpoint : MonoBehaviour
     private void OnTriggerStay2D(Collider2D collision)
     {
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
-        if (player != null)
+        if (player != null && !cameraScript.isMoving)
         {
             if (player.isGrounded && state == CheckpointState.Default && !SaveCoroutine)
             {
-                StartCoroutine(nameof(CheckpointSave));
+                StartCoroutine(CheckpointSave());
             }
         }
     }
@@ -58,7 +60,7 @@ public class Checkpoint : MonoBehaviour
     private IEnumerator CheckpointSave()
     {
         SaveCoroutine = true;
-        yield return new WaitForSeconds(0.05f);
+        yield return new WaitForSeconds(0.1f);
         if (PlayerManager.instance.player.isGrounded && !PlayerManager.instance.player.isDead && !PlayerManager.instance.player.dangerOfNails)
         {
             CheckpointManager.instance.SetActiveCheckpoint(this);
