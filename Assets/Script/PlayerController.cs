@@ -605,7 +605,7 @@ public class PlayerController : MonoBehaviour
                 yield return new WaitForSeconds(0.2f);
                 drillingCoroutineRunning = false;
 
-                yield return new WaitForSeconds(1f);
+                yield return null;
                 dangerOfNails = false;
 
                 yield break;  // 退出协程
