@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour
     public bool isDead;
     [SerializeField] private bool killedByFall;
     public bool killedByNail;
+    private bool isFallingCondition;
     public bool isFalling;
 
     public bool isOnPlatform;
@@ -186,8 +187,6 @@ public class PlayerController : MonoBehaviour
 
     private void FallDistanceState()
     {
-        //Debug.Log("fallDistance :" + fallDistance + "isGrounded = " + isGrounded);
-
         if (fallDistance > red && isGrounded && fallDistance < bounce)
         {
             Die();
@@ -353,16 +352,11 @@ public class PlayerController : MonoBehaviour
 
     private float IsFallingLogic() //坠落逻辑
     {
-        bool isFallingCondition = isInverted ? rb.velocity.y > 0 : rb.velocity.y < 0;
+        Debug.Log("isFallingCondition :" + isFallingCondition + "isFalling" + isFalling + "fallDistance = " + fallDistance + "isGrounded = " + isGrounded);
 
-        if (isFallingCondition && !isGrounded)
-        {
-            isFalling = true;
-        }
-        else
-        {
-            isFalling = false;
-        }
+        isFallingCondition = isInverted ? rb.velocity.y > 0 : rb.velocity.y < 0;
+
+        isFalling = isFallingCondition && !isGrounded;
 
         if (!isFalling)
         {
@@ -397,7 +391,7 @@ public class PlayerController : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
 
-        rb.velocity = drillingCoroutineRunning ? new Vector2(xInput * drillSpeed, rb.velocity.y) : new Vector2(xInput * moveSpeed, rb.velocity.y);
+        rb.velocity = drillingCoroutineRunning ? new Vector2(xInput * drillSpeed / 2, rb.velocity.y) : new Vector2(xInput * moveSpeed, rb.velocity.y);
 
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
     }

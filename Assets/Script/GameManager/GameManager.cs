@@ -164,10 +164,14 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         while (Time.time - startTime < quitTimeout)
+        {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                Debug.Log("Application.Quit");
                 Application.Quit();
                 yield break;
             }
+            yield return null;
+        }
     }
 }
