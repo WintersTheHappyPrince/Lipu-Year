@@ -352,7 +352,7 @@ public class PlayerController : MonoBehaviour
 
     private float IsFallingLogic() //坠落逻辑
     {
-        Debug.Log("isFallingCondition :" + isFallingCondition + "isFalling" + isFalling + "fallDistance = " + fallDistance + "isGrounded = " + isGrounded);
+        //Debug.Log("isFallingCondition :" + isFallingCondition + "isFalling" + isFalling + "fallDistance = " + fallDistance + "isGrounded = " + isGrounded);
 
         isFallingCondition = isInverted ? rb.velocity.y > 0 : rb.velocity.y < 0;
 
