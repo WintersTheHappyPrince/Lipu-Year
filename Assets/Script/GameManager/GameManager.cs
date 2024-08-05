@@ -75,9 +75,6 @@ public class GameManager : MonoBehaviour
         player.transform.position = LoadPlayerPosition();
         blockPlayer.transform.position = LoadPlayerBlockerPos();
 
-        Debug.Log(PlayerPrefs.GetInt("IsPlayerInverted"));
-        player.ResetInverted();
-
         GoalManager.instance.SetCollectedGoals(PlayerPrefs.GetInt("CollectedGoals", 0));
     }
 
@@ -97,11 +94,21 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("BlockerZ", blockPlayer.transform.position.z);
     }
 
+    //public void SaveCameraPosition(Vector3 position)
+    //{
+    //    PlayerPrefs.SetFloat("CameraPositionX", Camera.main.transform.position.x);
+    //    PlayerPrefs.SetFloat("CameraPositionY", Camera.main.transform.position.y);
+    //    PlayerPrefs.SetFloat("CameraPositionZ", Camera.main.transform.position.z);
+    //}
+
     public void SaveCameraPosition(Vector3 position)
     {
-        PlayerPrefs.SetFloat("CameraPositionX", Camera.main.transform.position.x);
-        PlayerPrefs.SetFloat("CameraPositionY", Camera.main.transform.position.y);
-        PlayerPrefs.SetFloat("CameraPositionZ", Camera.main.transform.position.z);
+        float correctedX = Mathf.Round(position.x / 30) * 30;
+        float correctedY = Mathf.Round(position.y / 16) * 16;
+
+        PlayerPrefs.SetFloat("CameraPositionX", correctedX);
+        PlayerPrefs.SetFloat("CameraPositionY", correctedY);
+        PlayerPrefs.SetFloat("CameraPositionZ", position.z);
     }
 
     public Vector3 LoadPlayerPosition()
@@ -153,6 +160,9 @@ public class GameManager : MonoBehaviour
     {
         float startTime = Time.time;
         float quitTimeout = 3f; // ≥¨ ± ±º‰£®√Î£©
+
+        yield return new WaitForSeconds(0.2f);
+
         while (Time.time - startTime < quitTimeout)
             if (Input.GetKeyDown(KeyCode.Escape))
             {

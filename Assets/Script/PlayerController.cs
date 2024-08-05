@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float jumpForce = 13f;
     public float drillSpeed = 2f;
-    public float invertGravityThreshold = 8f;
+
     public float xInput;
     private float jumpingGravity = 3f;
     private float defaultGravity = 8f;
@@ -56,6 +56,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask platformLayer; // 用于平台检测的 Layer
     public Transform groundCheck; // 地面检测的起始点
     public float groundCheckRadius = 0.35f; // 地面检测的半径
+    [SerializeField] private bool canDrill;
+    [SerializeField] private Transform drillCheck;
+    [SerializeField] private float drillCheckRadius;
 
     public bool headHit;
     [SerializeField] private Transform headCheck; // 头部检测的起始点
@@ -105,6 +108,8 @@ public class PlayerController : MonoBehaviour
 
         // Set initial state
         stateMachine.SetState(idleState);
+
+        ResetInverted();
     }
 
     private void FixedUpdate()
@@ -117,6 +122,8 @@ public class PlayerController : MonoBehaviour
         isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
         if (isOnPlatform) isGrounded = true;
 
+        canDrill = Physics2D.OverlapCircle(drillCheck.position, drillCheckRadius, groundLayer | platformLayer);
+
         //检测头部
         headHit = Physics2D.OverlapCircle(headCheck.position, headCheckDistance, groundLayer);
     }
@@ -126,6 +133,7 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         isOnPlatform = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, platformLayer);
         if (isOnPlatform) isGrounded = true;
+        canDrill = Physics2D.OverlapCircle(drillCheck.position, drillCheckRadius, groundLayer | platformLayer);
 
         //空格重开
         if (isDead)
@@ -143,6 +151,7 @@ public class PlayerController : MonoBehaviour
             }
             return;
         }
+        if (isRespawnCorRunning) return;
 
         //翻转角色
         Flip();
@@ -290,7 +299,8 @@ public class PlayerController : MonoBehaviour
 
     public void ResetInverted()
     {
-        Debug.Log(PlayerPrefs.GetInt("IsPlayerInverted"));
+        Debug.Log("PlayerPrefs IsPlayerInverted" + PlayerPrefs.GetInt("IsPlayerInverted"));
+        Debug.Log("Player isInverted:" + isInverted);
         if (PlayerPrefs.GetInt("IsPlayerInverted") == 1 && !isInverted)
             InvertedSetup();
         else if (PlayerPrefs.GetInt("IsPlayerInverted") == 0 && isInverted)
@@ -312,41 +322,26 @@ public class PlayerController : MonoBehaviour
         killedByFall = false;
         anim.SetBool("Dead", false);
         sr.color = normalColor;
-
-        transitionEffect.PlayerRespawn();
+        ChangeState(idleState);
 
         //修改（摔死）死亡动画位置使其匹配视觉效果
         anim.transform.localPosition = killedByNail ? new Vector3(0, 0.25f, 0) : new Vector3(0, 0.25f, 0);
         killedByNail = false;
 
+        ResetInverted();
+
+        transitionEffect.PlayerRespawn();
 
         isRespawnCorRunning = false;
     }
-
-    //public void Respawn()
-    //{
-    //    transitionEffect.PlayerDied();
-
-    //    //参数调整
-    //    isDead = false;
-    //    killedByFall = false;
-    //    anim.SetBool("Dead", false);
-    //    sr.color = normalColor;
-    //    //修改死亡动画位置使其匹配视觉效果
-    //    if (killedByNail)
-    //    {
-    //        killedByNail = false;
-    //        return;
-    //    }
-
-    //    anim.transform.localPosition = new Vector3(0, 0.25f, 0);
-    //}
 
     public void Die()
     {
         anim.SetBool("Dead", true);
         isDead = true;
         rb.velocity = new Vector2(0, 0);
+        isFalling = false;
+        fallDistance = 0;
         //修改死亡动画位置使其匹配视觉效果
         anim.transform.localRotation = Quaternion.identity;
 
@@ -385,13 +380,15 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmos()  //检测射线
     {
-        if (groundCheck == null || headCheck == null) return;
+        if (groundCheck == null || headCheck == null || drillCheck == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         //Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
 
-
         Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(drillCheck.position, drillCheckRadius);
+
+        Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(headCheck.position, headCheckDistance);
         //Gizmos.DrawLine(headCheck.position, headCheck.position + Vector3.up * headCheckDistance);
     }
@@ -400,7 +397,7 @@ public class PlayerController : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
 
-        rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
+        rb.velocity = drillingCoroutineRunning ? new Vector2(xInput * drillSpeed, rb.velocity.y) : new Vector2(xInput * moveSpeed, rb.velocity.y);
 
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
     }
@@ -460,7 +457,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator AnimRotate()
     {
-        Debug.Log("旋转动画协程");
+        //Debug.Log("旋转动画协程");
 
         isAnimRotated = true;
 
@@ -473,7 +470,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator AnimlocalRotation()
     {
-        Debug.Log("复原旋转动画协程");
+        //Debug.Log("复原旋转动画协程");
         isAnimRotated = true;
 
         anim.transform.localRotation = Quaternion.identity;
@@ -562,13 +559,13 @@ public class PlayerController : MonoBehaviour
 
         dangerOfNails = true;
 
-        Debug.Log("开始钻地协程");
+        //Debug.Log("开始钻地协程");
 
         while (!hasEnteredIgnoreCollision) //进入地面前
         {
-            bool isTouchingGround = isGrounded;
+            bool isTouchingGround = canDrill;
 
-            Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
+            //Debug.Log($"cd.IsTouchingLayers(Ground): {isTouchingGround}");
 
             //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
 
@@ -581,7 +578,7 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, 0);
                 //rb.velocity = new Vector2(rb.velocity.x, -drillSpeed);
                 rb.velocity = isInverted ? new Vector2(rb.velocity.x, drillSpeed) : new Vector2(rb.velocity.x, -drillSpeed);
-                Debug.Log("忽略碰撞层");
+                //Debug.Log("忽略碰撞层");
             }
             yield return null;
         }//接触地面后进行下面的while循环
@@ -602,7 +599,7 @@ public class PlayerController : MonoBehaviour
 
             if (hasEnteredIgnoreCollision && !isTouchingGround || isDead)  //退出钻地
             {
-                Debug.Log("恢复碰撞层");
+                //Debug.Log("恢复碰撞层");
                 //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
                 cd.isTrigger = false;
                 ChangeState(airState);  // 回到airState状态或者其他适合的状态

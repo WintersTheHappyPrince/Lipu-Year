@@ -21,6 +21,8 @@ public class TransitionEffect : MonoBehaviour
         {
             maskRectTransform = circleMask.GetComponent<RectTransform>();
         }
+
+        PlayerRespawn();
     }
 
     void Update()

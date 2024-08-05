@@ -76,9 +76,8 @@ public class GoalController : MonoBehaviour
         PlayerPrefs.SetInt(gameObject.name + "ColorIndex", colorIndex);
 
         // 更新收集进度
-        GoalManager.instance.CollectGoal();
         PlayerPrefs.SetInt(gameObject.name, 1); // 保存收集状态
-        PlayerPrefs.Save();
+        GoalManager.instance.CollectGoal();
 
         // 禁用 Collider2D
         Collider2D collider = GetComponent<Collider2D>();
