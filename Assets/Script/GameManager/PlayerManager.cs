@@ -15,7 +15,6 @@ public class PlayerManager : MonoBehaviour
         else
         {
             instance = this;
-            DontDestroyOnLoad(gameObject); // 保持单例对象在场景切换时不被销毁
         }
 
         if (player == null)

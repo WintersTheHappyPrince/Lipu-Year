@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,7 +19,6 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -64,7 +62,6 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("IsPlayerInverted", player.isInverted ? 1 : 0);
 
         PlayerPrefs.Save();
-        Debug.Log("DateSave");
     }
 
     public void Load()
@@ -129,41 +126,34 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.I))
-        //{
-        //    saveLoadManager.SaveGame();
-        //}
-        //if (Input.GetKeyDown(KeyCode.O))
-        //{
-        //    saveLoadManager.LoadGame();
-        //}
-        //if (Input.GetKeyDown(KeyCode.R))
-        //{
-        //    PlayerPrefs.DeleteAll();
-        //    Debug.Log("PlayerPrefs.DeleteAll");
-        //}
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             StartCoroutine(Quit());
         }
     }
 
+
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
     private IEnumerator Quit()
     {
-        float startTime = Time.time;
-        float quitTimeout = 3f; // 超时时间（秒）
+        SceneManager.LoadScene(mainMenuSceneName);
 
-        yield return new WaitForSeconds(0.2f);
+        yield return null;
 
-        while (Time.time - startTime < quitTimeout)
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                Debug.Log("Application.Quit");
-                Application.Quit();
-                yield break;
-            }
-            yield return null;
-        }
+        //float startTime = Time.time;
+        //float quitTimeout = 3f; // 超时时间（秒）
+
+        //yield return new WaitForSeconds(0.2f);
+
+        //while (Time.time - startTime < quitTimeout)
+        //{
+        //    if (Input.GetKeyDown(KeyCode.Escape))
+        //    {
+        //        Debug.Log("Application.Quit");
+        //        Application.Quit();
+        //        yield break;
+        //    }
+        //    yield return null;
+        //}
     }
 }

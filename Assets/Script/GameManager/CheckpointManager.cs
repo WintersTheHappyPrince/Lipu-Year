@@ -25,7 +25,6 @@ public class CheckpointManager : MonoBehaviour
 
     public void SetActiveCheckpoint(Checkpoint checkpoint)
     {
-        CheckpointSave?.Invoke();
         if (currentCheckpoint != null)
         {
             currentCheckpoint.SetState(Checkpoint.CheckpointState.Default);
@@ -36,6 +35,8 @@ public class CheckpointManager : MonoBehaviour
 
         // 保存最后激活的检查点位置
         lastCheckpointPosition = currentCheckpoint.transform.position;
+
+        CheckpointSave?.Invoke();
     }
 
     public Checkpoint GetCurrentCheckpoint()

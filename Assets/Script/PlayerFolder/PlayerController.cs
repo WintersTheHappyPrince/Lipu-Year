@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -292,10 +293,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public TransitionEffect transitionEffect;
-
-    private bool isRespawnCorRunning;
-
     public void ResetInverted()
     {
         Debug.Log("PlayerPrefs IsPlayerInverted" + PlayerPrefs.GetInt("IsPlayerInverted"));
@@ -306,6 +303,10 @@ public class PlayerController : MonoBehaviour
             InvertedSetup();
     }
 
+    [SerializeField] private TransitionEffect transitionEffect;
+
+    private bool isRespawnCorRunning;
+
     public IEnumerator Respawn()
     {
         isRespawnCorRunning = true;
@@ -314,6 +315,7 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitUntil(() => !transitionEffect.isTransitioning);
 
+        highestPos = PlayerPrefs.GetFloat("PlayerY", 0);
         RespawnSystemAction?.Invoke();
 
         //参数调整
@@ -329,6 +331,7 @@ public class PlayerController : MonoBehaviour
 
         ResetInverted();
 
+        yield return null;
         transitionEffect.PlayerRespawn();
 
         isRespawnCorRunning = false;
@@ -336,15 +339,18 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
+        AudioManager.instance.PlaySFX(2);
         anim.SetBool("Dead", true);
         isDead = true;
         rb.velocity = new Vector2(0, 0);
+        //修改死亡动画位置使其匹配视觉效果
+
         isFalling = false;
         fallDistance = 0;
-        //修改死亡动画位置使其匹配视觉效果
+
         anim.transform.localRotation = Quaternion.identity;
 
-        if (killedByNail) return;
+        if (killedByNail) return;//摔死调整动画动画位置使其匹配视觉效果
         Vector3 newPosition = anim.transform.position;
         newPosition.y -= 0.12f;
         anim.transform.position = newPosition;
@@ -406,6 +412,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!rotating) //bounce判断符
             {
+                AudioManager.instance.PlaySFX(4, 0.8f);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 isJumping = true;
                 jumpTimeCounter = 0f;
@@ -566,6 +573,7 @@ public class PlayerController : MonoBehaviour
 
             if (!hasEnteredIgnoreCollision && isTouchingGround) //第一次接触地面
             {
+                AudioManager.instance.PlaySFX(1);
                 cd.isTrigger = true;
                 hasEnteredIgnoreCollision = true;
                 rb.gravityScale = 0;
@@ -595,6 +603,7 @@ public class PlayerController : MonoBehaviour
             {
                 //Debug.Log("恢复碰撞层");
                 //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
+                AudioManager.instance.PlaySFX(1);
                 cd.isTrigger = false;
                 ChangeState(airState);  // 回到airState状态或者其他适合的状态
                 rb.gravityScale = jumpingGravity;
@@ -649,7 +658,8 @@ public class PlayerController : MonoBehaviour
         bounceHeight = -bounceHeight;
         isFacingRight = !isFacingRight;
 
-        Debug.Log("Player's InvertedSystemAction");
+        AudioManager.instance.PlaySFX(1);
+        //Debug.Log("Player's InvertedSystemAction");
         InvertedSystemAction?.Invoke();
 
         isInverted = !isInverted;

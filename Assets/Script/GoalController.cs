@@ -36,7 +36,9 @@ public class GoalController : MonoBehaviour
         if (player != null)
         {
             if (!collectGoalCheck)
+            {
                 StartCoroutine(CollectGoalCheck());
+            }
         }
     }
 

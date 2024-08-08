@@ -6,6 +6,7 @@ public class BouncingState : PlayerState
 
     public override void Enter()
     {
+        AudioManager.instance.PlaySFX(4, 1.2f);
         //ÌøÔ¾¶¥Í·
         player.jumpTimeCounter = 0;
         player.isJumping = true;

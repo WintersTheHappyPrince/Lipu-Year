@@ -67,6 +67,7 @@ public class Checkpoint : MonoBehaviour
         if (PlayerManager.instance.player.isGrounded && !PlayerManager.instance.player.isDead && !PlayerManager.instance.player.dangerOfNails)
         {
             CheckpointManager.instance.SetActiveCheckpoint(this);
+            AudioManager.instance.PlaySFX(0);
         }
         SaveCoroutine = false;
     }
