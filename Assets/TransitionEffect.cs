@@ -94,47 +94,6 @@ public class TransitionEffect : MonoBehaviour
         }
     }
 
-
-    //private void ShrinkMask()
-    //{
-    //    if (maskRectTransform == null)
-    //    {
-    //        Debug.LogError("maskRectTransform is not assigned.");
-    //        return;
-    //    }
-
-    //    float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
-    //    float smoothT = Mathf.SmoothStep(0f, 1f, t);
-    //    maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
-
-    //    if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
-    //    {
-    //        maskRectTransform.localScale = targetScale;
-    //        isTransitioning = false;
-    //        // 玩家死亡后其他逻辑
-    //    }
-    //}
-
-    //private void ExpandMask()
-    //{
-    //    if (maskRectTransform == null)
-    //    {
-    //        Debug.LogError("maskRectTransform is not assigned.");
-    //        return;
-    //    }
-
-    //    float t = Mathf.Clamp01(transitionSpeed * Time.deltaTime);
-    //    float smoothT = Mathf.SmoothStep(0f, 1f, t);
-    //    maskRectTransform.localScale = Vector3.Lerp(maskRectTransform.localScale, targetScale, smoothT);
-
-    //    if (Vector3.Distance(maskRectTransform.localScale, targetScale) < 0.01f)
-    //    {
-    //        maskRectTransform.localScale = targetScale;
-    //        isTransitioning = false;
-    //        // 玩家重生后其他逻辑
-    //    }
-    //}
-
     private void UpdateMaskPosition()
     {
         if (player == null || maskRectTransform == null || canvas == null)

@@ -20,6 +20,7 @@ public class Checkpoint : MonoBehaviour
     {
         cameraScript = FindObjectOfType<CameraParentTriggerHandler>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
         // 初始化检查点的显示图像
         UpdateSprite();
     }
@@ -49,7 +50,9 @@ public class Checkpoint : MonoBehaviour
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null && !cameraScript.isMoving)
         {
-            if (player.isGrounded && state == CheckpointState.Default && !SaveCoroutine)
+            if ((player.isGrounded && state == CheckpointState.Default && !SaveCoroutine) ||
+                (PlayerPrefs.GetInt("IsPlayerInverted") == 1 && !player.isInverted) ||
+                (PlayerPrefs.GetInt("IsPlayerInverted") == 0 && player.isInverted))
             {
                 StartCoroutine(CheckpointSave());
             }

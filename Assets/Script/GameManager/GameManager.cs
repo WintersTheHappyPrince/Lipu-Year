@@ -6,8 +6,6 @@ using UnityEngine.UIElements;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public SaveLoadManager saveLoadManager;
-    public Vector3 playerPosition;
 
     private Vector3 savedCameraPosition;
     private GameObject blockPlayer;
@@ -58,7 +56,7 @@ public class GameManager : MonoBehaviour
     public void Save()
     {
         SaveCameraPosition(Camera.main.transform.position);
-        SavePlayerPosition(player.transform.position);
+        SavePlayerPosition(CheckpointManager.instance.lastCheckpointPosition);
         SavePlayerBlockerPos(blockPlayer.transform.position);
 
         PlayerPrefs.SetInt("CollectedGoals", GoalManager.instance.GetCollectedGoals());
@@ -80,26 +78,20 @@ public class GameManager : MonoBehaviour
 
     public void SavePlayerPosition(Vector3 position)
     {
-        playerPosition = position;
         PlayerPrefs.SetFloat("PlayerX", position.x);
         PlayerPrefs.SetFloat("PlayerY", position.y);
         PlayerPrefs.SetFloat("PlayerZ", position.z);
-        
     }
 
     public void SavePlayerBlockerPos(Vector3 position)
     {
+        float correctedX = Mathf.Round(position.x / 30) * 30;
+        float correctedY = Mathf.Round(position.y / 16) * 16;
+
         PlayerPrefs.SetFloat("BlockerX", blockPlayer.transform.position.x);
         PlayerPrefs.SetFloat("BlockerY", blockPlayer.transform.position.y);
         PlayerPrefs.SetFloat("BlockerZ", blockPlayer.transform.position.z);
     }
-
-    //public void SaveCameraPosition(Vector3 position)
-    //{
-    //    PlayerPrefs.SetFloat("CameraPositionX", Camera.main.transform.position.x);
-    //    PlayerPrefs.SetFloat("CameraPositionY", Camera.main.transform.position.y);
-    //    PlayerPrefs.SetFloat("CameraPositionZ", Camera.main.transform.position.z);
-    //}
 
     public void SaveCameraPosition(Vector3 position)
     {

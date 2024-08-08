@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class SetInitialResolution : MonoBehaviour
 {
-    public int targetWidth = 1920;
-    public int targetHeight = 1024;
+    public int targetWidth = 1280;
+    public int targetHeight = 682;
     public bool isFullScreen = false; // 根据需要设置是否全屏
     public float targetAspectRatio = 30f / 16f; // 目标宽高比
 
