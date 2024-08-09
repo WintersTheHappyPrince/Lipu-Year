@@ -36,7 +36,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySFX(int _sfxIndex)
     {
-        if(_sfxIndex < sfx.Length)
+        if (_sfxIndex < sfx.Length && !sfx[_sfxIndex].isPlaying)
         {
             sfx[_sfxIndex].pitch = 1;
             sfx[_sfxIndex].Play();
@@ -45,7 +45,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySFX(int _sfxIndex, float _pitch)
     {
-        if (_sfxIndex < sfx.Length)
+        if (_sfxIndex < sfx.Length && !sfx[_sfxIndex].isPlaying)
         {
             sfx[_sfxIndex].pitch = _pitch;
             sfx[_sfxIndex].Play();

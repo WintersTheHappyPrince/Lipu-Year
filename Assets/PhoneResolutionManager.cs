@@ -7,6 +7,12 @@ public class FixedAspectRatio : MonoBehaviour
 
     void Start()
     {
+        Adjust();
+    }
+
+    private void Adjust()
+    {
+
         // 获取当前屏幕的宽高比
         float windowAspect = (float)Screen.width / (float)Screen.height;
         float scaleHeight = windowAspect / targetAspect;

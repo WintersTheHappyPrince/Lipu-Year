@@ -26,15 +26,15 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public Color fallColor;
     public Color deadColor;
 
-    public float bounce = 3.8f; //进入弹跳需要的格数
+    public float bounce = 3.65f; //进入弹跳需要的格数
     public Color bounceColor;
     public float bounceHeight = 15f;
 
-    public float drill = 6.3f; //进入钻地需要的格数
+    public float drill = 5.7f; //进入钻地需要的格数
     public Color drillColor;
     public Color drillingColor = Color.black;
 
-    public float inverted = 7.5f;
+    public float inverted = 7.3f;
     public bool isInverted;
     public Color invertedColor = Color.yellow;
 
