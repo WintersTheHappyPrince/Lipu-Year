@@ -47,8 +47,9 @@ public class PlayerController : MonoBehaviour
     public float drillSpeed = 2f;
 
     public float xInput;
-    private float jumpingGravity = 3f;
-    private float defaultGravity = 8f;
+
+    [SerializeField] private float defaultGravity = 3f;
+
     private bool jumpInput;
     public bool isJumping;
     #endregion
@@ -183,9 +184,6 @@ public class PlayerController : MonoBehaviour
         // 更新颜色
         UpdateColor();
 
-        //滞空重力
-        GravityChange();
-
         //摔落距离状态
         FallDistanceState();
         //↑↓这两个方法代码位置不能交换
@@ -235,22 +233,6 @@ public class PlayerController : MonoBehaviour
                 StartSetDefaultColor(0.1f);
             }
         }
-    }
-
-    private void GravityChange()
-    {
-        //if (drillingCoroutineRunning) return;
-
-        if (isGrounded)
-        {
-            if (!isJumping)
-                rb.gravityScale = defaultGravity;
-        }
-        else
-        {
-            rb.gravityScale = jumpingGravity;
-        }
-
     }
 
     public void UpdateColor()
@@ -450,8 +432,6 @@ public class PlayerController : MonoBehaviour
         // 跳跃时间控制
         if (isJumping)
         {
-            rb.gravityScale = jumpingGravity;
-
             jumpTimeCounter += Time.deltaTime;
             if (jumpTimeCounter >= jumpDuration)
             {
@@ -632,7 +612,7 @@ public class PlayerController : MonoBehaviour
                 AudioManager.instance.PlaySFX(1);
                 cd.isTrigger = false;
                 ChangeState(airState);  // 回到airState状态或者其他适合的状态
-                rb.gravityScale = jumpingGravity;
+                rb.gravityScale = defaultGravity;
                 StartCoroutine(AnimlocalRotation());
                 highestPos = transform.position.y;
 
@@ -679,7 +659,6 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(AnimlocalRotation());
 
         defaultGravity = -defaultGravity;
-        jumpingGravity = -jumpingGravity;
         jumpForce = -jumpForce;
         bounceHeight = -bounceHeight;
         isFacingRight = !isFacingRight;
