@@ -40,7 +40,6 @@ public class UI_MainMenu : MonoBehaviour
         else if (GoalManager.instance.HasSavedData() == true)
         {
             int goalsCollected = GoalManager.instance.GetCollectedGoals();
-            Debug.Log(goalsCollected);
             continueButton.GetComponentInChildren<TextMeshProUGUI>().text = "¼ÌÐøÓÎÏ·" + "\n" + $"{goalsCollected}" + "/29";
         }
     }

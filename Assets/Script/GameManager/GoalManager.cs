@@ -37,14 +37,6 @@ public class GoalManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            Debug.Log("pressed P");
-            StartCoroutine(CompleteGame());
-        }
-    }
     public void CollectGoal()
     {
         collectedGoals++;

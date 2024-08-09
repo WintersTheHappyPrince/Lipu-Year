@@ -143,17 +143,30 @@ public class PlayerController : MonoBehaviour
         //空格重开
         if (isDead)
         {
-            transform.position = transform.position;
             if (killedByFall)
                 sr.color = fallColor;
             else if (killedByNail)
                 sr.color = deadColor;
 
-            if (Input.GetButtonDown("Jump") || Input.GetButtonDown("JoyJump"))
-            {
+            if(Input.GetButtonDown("Jump") || Input.GetButtonDown("JoyJump"))
                 if (!isRespawnCorRunning)
                     StartCoroutine(Respawn());
+
+
+            //手机端逻辑
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Vector3 pos = Input.GetTouch(i).position;
+
+                if (pos.x > Screen.width / 2)
+                {
+                    Debug.Log("isJumpInput"+ jumpInput);
+                    if (!isRespawnCorRunning)
+                        StartCoroutine(Respawn());
+                    break;
+                }
             }
+
             return;
         }
         if (isRespawnCorRunning) return;

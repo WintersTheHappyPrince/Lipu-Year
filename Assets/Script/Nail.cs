@@ -7,7 +7,7 @@ public class Nail : MonoBehaviour
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {
-            if (((!player.isInverted) && (player.fallDistance > 0.3)) || ((player.isInverted) && (player.rb.velocity.y < -1)) || player.dangerOfNails)
+            if (((!player.isInverted) && (player.fallDistance > 0.2)) || ((player.isInverted) && (player.rb.velocity.y < -1)) || player.dangerOfNails)
             {
                 Debug.Log("Playerfalldis :" + player.fallDistance+ "player.rb.velocity.y : " + player.rb.velocity.y);
                 player.killedByNail = true;

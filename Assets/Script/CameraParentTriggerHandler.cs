@@ -27,7 +27,7 @@ public class CameraParentTriggerHandler : MonoBehaviour
             blockPlayer.SetActive(false);
         }
 
-        gridLine = GetComponentInChildren<GridDrawer>()?.gameObject;
+        gridLine = FindObjectOfType<GridDrawer>().gameObject;
 
         // 获取所有子对象的Collider
         Collider2D[] childColliders = GetComponentsInChildren<Collider2D>();

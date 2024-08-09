@@ -28,7 +28,6 @@ public class GameManager : MonoBehaviour
         checkpointManager = FindObjectOfType<CheckpointManager>();
 
         player = FindObjectOfType<PlayerController>();
-
     }
 
     private void Start()
