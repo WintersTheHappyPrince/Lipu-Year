@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GoalManager : MonoBehaviour
 {
@@ -36,6 +37,14 @@ public class GoalManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log("pressed P");
+            StartCoroutine(CompleteGame());
+        }
+    }
     public void CollectGoal()
     {
         collectedGoals++;
@@ -47,7 +56,7 @@ public class GoalManager : MonoBehaviour
         }
         else if (collectedGoals == totalGoals)
         {
-            CompleteGame();
+            StartCoroutine(CompleteGame());
         }
 
         // 保存游戏状态
@@ -74,19 +83,17 @@ public class GoalManager : MonoBehaviour
         finalLock?.SetActive(false);
     }
 
+    private string EndSceneName = "GameCompleted";
     private IEnumerator CompleteGame()
     {
-        Debug.Log("Game completed!");
+        //Debug.Log("Game completed!");
         // 在这里添加通关的逻辑
         PlayerManager.instance.player.enabled = false;
         transitionEffect.transitionSpeed = 0.5f;
         transitionEffect.PlayerDied();
         yield return new WaitForSeconds(0.1f);
-        while (!transitionEffect.isTransitioning)
-        {
-            transitionEffect.transitionSpeed = 2f;
-            yield return null;
-        }
+        yield return new WaitUntil(() => !transitionEffect.isTransitioning);
+        SceneManager.LoadScene(EndSceneName);
     }
 
     public int GetCollectedGoals()

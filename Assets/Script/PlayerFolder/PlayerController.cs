@@ -85,6 +85,9 @@ public class PlayerController : MonoBehaviour
     private float highestPos;
     public float fallDistance;
     #endregion
+    #region MobilePhoneInput
+    public VariableJoystick variableJoystick;
+    #endregion
     [SerializeField] private float testFloat;
     public System.Action RespawnSystemAction;
     public System.Action InvertedSystemAction;
@@ -295,8 +298,8 @@ public class PlayerController : MonoBehaviour
 
     public void ResetInverted()
     {
-        Debug.Log("PlayerPrefs IsPlayerInverted" + PlayerPrefs.GetInt("IsPlayerInverted"));
-        Debug.Log("Player isInverted:" + isInverted);
+        //Debug.Log("PlayerPrefs IsPlayerInverted" + PlayerPrefs.GetInt("IsPlayerInverted"));
+        //Debug.Log("Player isInverted:" + isInverted);
         if (PlayerPrefs.GetInt("IsPlayerInverted") == 1 && !isInverted)
             InvertedSetup();
         else if (PlayerPrefs.GetInt("IsPlayerInverted") == 0 && isInverted)
@@ -397,6 +400,9 @@ public class PlayerController : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
 
+        //手机端逻辑
+        xInput = xInput == 0 ? variableJoystick.Horizontal : xInput;
+
         rb.velocity = drillingCoroutineRunning ? new Vector2(xInput * drillSpeed / 2, rb.velocity.y) : new Vector2(xInput * moveSpeed, rb.velocity.y);
 
         isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
@@ -405,6 +411,13 @@ public class PlayerController : MonoBehaviour
     private void JumpLogic()
     {
         jumpInput = Input.GetButtonDown("Jump") || Input.GetButtonDown("JoyJump");
+
+        //手机端逻辑
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            Vector3 pos = Input.GetTouch(i).position;
+            jumpInput = (pos.x > Screen.width / 2);
+        }
 
         if (drillingCoroutineRunning) return;
 
