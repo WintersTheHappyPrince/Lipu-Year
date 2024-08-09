@@ -8,17 +8,36 @@ using UnityEngine.UI;
 public class UI_MainMenu : MonoBehaviour
 {
     [SerializeField] private string mainSceneName = "MainScene";
+    [SerializeField] private GameObject newGameButton;
     [SerializeField] private GameObject continueButton;
+
+    [SerializeField]private GameObject gameClearScript;
 
     private void Start()
     {
-        //此段if else控制继续游戏存档
+        gameClearScript = FindObjectOfType<GameClearScript>()?.gameObject;
+
+        //如果已经通关游戏
+        if(gameClearScript != null)
+        {
+            if (gameClearScript.GetComponent<GameClearScript>().isGameCleared)
+            {
+                newGameButton.GetComponentInChildren<TextMeshProUGUI>().color = Color.red;
+
+                continueButton.GetComponentInChildren<TextMeshProUGUI>().color = Color.blue;
+                continueButton.GetComponentInChildren<TextMeshProUGUI>().text = "感谢游玩";
+                continueButton.GetComponent<Button>().enabled = false;
+                return;
+            }
+        }
+
+        //此段if else控制有存档情况下改变继续游戏按钮显示
         if (GoalManager.instance.HasSavedData() == false)
         {
             continueButton.GetComponent<Button>().enabled = false;
             continueButton.GetComponent<CanvasGroup>().alpha = 0.25f;
         }
-        else
+        else if (GoalManager.instance.HasSavedData() == true)
         {
             int goalsCollected = GoalManager.instance.GetCollectedGoals();
             Debug.Log(goalsCollected);
@@ -32,7 +51,7 @@ public class UI_MainMenu : MonoBehaviour
         SceneManager.LoadScene(mainSceneName);
     }
 
-    [SerializeField] GameObject newGameButton;
+    
     public void NewGame()
     {
         //此段if else控制新游戏覆盖存档
@@ -42,7 +61,7 @@ public class UI_MainMenu : MonoBehaviour
             PlayerPrefs.DeleteAll();
             SceneManager.LoadScene(mainSceneName);
         }
-        else if(GoalManager.instance.HasSavedData() == true)
+        else if (GoalManager.instance.HasSavedData() == true)
         {
             AudioManager.instance.PlaySFX(5);
             newGameButton.GetComponentInChildren<TextMeshProUGUI>().text = "新游戏?";
@@ -52,6 +71,8 @@ public class UI_MainMenu : MonoBehaviour
 
     private void ConfirmNewGame()
     {
+        if (gameClearScript != null)
+            Destroy(gameClearScript);
         AudioManager.instance.PlaySFX(5);
         PlayerPrefs.DeleteAll();
         SceneManager.LoadScene(mainSceneName);
@@ -62,4 +83,5 @@ public class UI_MainMenu : MonoBehaviour
         AudioManager.instance.PlaySFX(5);
         Application.Quit();
     }
+
 }
