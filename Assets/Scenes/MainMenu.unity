@@ -1328,6 +1328,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ResolutionManager
       objectReference: {fileID: 0}
+    - target: {fileID: 3983592287853019503, guid: 3ffc06f68304a2b4981966468efe5709, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1626,8 +1630,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainSceneName: MainScene
-  continueButton: {fileID: 1643343520}
   newGameButton: {fileID: 746783744}
+  continueButton: {fileID: 1643343520}
+  gameClearScript: {fileID: 0}
 --- !u!1 &1163307255
 GameObject:
   m_ObjectHideFlags: 0
